@@ -35,6 +35,7 @@ def get_distance() -> int:
 
     return distance
 
+
 def scan() -> float:
     """
     Scans in front of the car and returns the distance
@@ -77,9 +78,6 @@ def turn_right(power: int = 50):
 
 
 def move_backward(power: int = 25):
-    global current_angle
-    current_angle = 0
-    fc.servo.set_angle(current_angle)
     fc.backward(power)
 
 
