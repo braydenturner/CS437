@@ -86,7 +86,6 @@ def move_forward(power: int = 30):
 
 
 def main():
-    fc.servo.set_angle(current_angle)
     while True:
         move_forward()
         distance = get_distance()
