@@ -42,7 +42,7 @@ def scan() -> float:
     :return: distance in cm
     """
     global current_angle, step
-    angle_range = 180
+    angle_range = 90
     max_angle = angle_range / 2
     min_angle = max_angle * -1
 
@@ -86,9 +86,10 @@ def move_forward(power: int = 30):
 
 
 def main():
+    fc.servo.set_angle(current_angle)
     while True:
         move_forward()
-        distance = get_distance()
+        distance = scan()
         if distance < 10:
             move_backward()
             time.sleep(1)
