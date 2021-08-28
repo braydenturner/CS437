@@ -41,8 +41,9 @@ def scan() -> float:
     :return: distance in cm
     """
     global current_angle, step
-    max_angle = 90
-    min_angle = -90
+    angle_range = 90
+    max_angle = angle_range / 2
+    min_angle = max_angle * -1
 
     current_angle += step
     if current_angle > max_angle:
@@ -91,7 +92,7 @@ def main():
     while True:
         move_forward()
         distance = scan()
-        if distance < 5:
+        if distance < 10:
             move_backward()
             time.sleep(1)
             turn_random_direction()
