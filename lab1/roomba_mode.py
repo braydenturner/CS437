@@ -17,7 +17,7 @@ class Direction(Enum):
         and turns in that direction
         :return: None
         """
-        seconds: float = random.random() * 2
+        seconds: float = random.uniform(.5, 1) * 2
         if self == Direction.Left:
             turn_left(seconds)
         else:
@@ -77,23 +77,24 @@ def turn_right(power: int = 50):
     fc.forward(power)
 
 
-def move_backward(power: int = 25):
+def move_backward(power: int = 15):
     fc.backward(power)
 
 
-def move_forward(power: int = 30):
+def move_forward(power: int = 20):
     fc.forward(power)
 
 
 def main():
     fc.servo.set_angle(current_angle)
+    move_forward()
     while True:
-        move_forward()
         distance = scan()
         if distance < 10:
             move_backward()
-            time.sleep(1)
+            time.sleep(.75)
             turn_random_direction()
+            move_forward()
 
 
 if __name__ == "__main__":
