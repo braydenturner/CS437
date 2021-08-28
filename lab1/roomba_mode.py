@@ -8,10 +8,17 @@ class Direction(Enum):
     Right = 1
 
     def turn(self):
+        """
+        Picks a random time in seconds between [0, 2]
+        and turns in that direction
+        :return: None
+        """
+        seconds: float = random.random() * 2
         if self == Direction.Left:
-            turn_left(2)
+            turn_left(seconds)
         else:
-            turn_right(2)
+            turn_right(seconds)
+        time.sleep(seconds)
 
 
 def get_distance() -> int:
@@ -43,12 +50,13 @@ def turn_random_direction():
     print(f"Turning {direction}")
     direction.turn()
 
-def turn_left(seconds: int, power: int = 50):
+
+def turn_left(power: int = 50):
     """Move backward"""
-    fc.forward(power)
+    fc.turn_left(power)
 
 
-def turn_right(seconds: int, power: int = 50):
+def turn_right(power: int = 50):
     """Move backward"""
     fc.forward(power)
 
