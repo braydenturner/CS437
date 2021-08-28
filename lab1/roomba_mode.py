@@ -42,7 +42,7 @@ def scan() -> float:
     :return: distance in cm
     """
     global current_angle, step
-    angle_range = 90
+    angle_range = 135
     max_angle = angle_range / 2
     min_angle = max_angle * -1
 
@@ -78,10 +78,12 @@ def turn_right(power: int = 50):
 
 
 def move_backward(power: int = 15):
+    print("Backing up")
     fc.backward(power)
 
 
 def move_forward(power: int = 20):
+    print("Onward!")
     fc.forward(power)
 
 
