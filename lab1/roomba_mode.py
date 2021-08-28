@@ -13,11 +13,11 @@ class Direction(Enum):
 
     def turn(self):
         """
-        Picks a random time in seconds between [0, 2]
+        Picks a random time in seconds between [.5, 2]
         and turns in that direction
         :return: None
         """
-        seconds: float = random.uniform(.5, 1) * 2
+        seconds: float = random.uniform(.25, 1) * 2
         if self == Direction.Left:
             turn_left()
         else:
@@ -74,16 +74,14 @@ def turn_left(power: int = 50):
 
 
 def turn_right(power: int = 50):
-    fc.forward(power)
+    fc.turn_right(power)
 
 
 def move_backward(power: int = 15):
-    print("Moving backward")
     fc.backward(power)
 
 
 def move_forward(power: int = 20):
-    print("Moving forward")
     fc.forward(power)
 
 
