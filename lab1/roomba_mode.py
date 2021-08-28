@@ -19,9 +19,9 @@ class Direction(Enum):
         """
         seconds: float = random.uniform(.5, 1) * 2
         if self == Direction.Left:
-            turn_left(seconds)
+            turn_left()
         else:
-            turn_right(seconds)
+            turn_right()
         time.sleep(seconds)
 
 
