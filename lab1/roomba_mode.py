@@ -68,22 +68,21 @@ def turn_random_direction():
 
 
 def turn_left(power: int = 50):
-    """Move backward"""
     fc.turn_left(power)
 
 
 def turn_right(power: int = 50):
-    """Move backward"""
     fc.forward(power)
 
 
 def move_backward(power: int = 25):
-    """Move backward"""
     fc.backward(power)
 
 
-def move_forward(power: int = 50):
-    """Move backward"""
+def move_forward(power: int = 30):
+    global current_angle
+    current_angle = 0
+    fc.servo.set_angle(current_angle)
     fc.forward(power)
 
 
@@ -92,7 +91,7 @@ def main():
     while True:
         move_forward()
         distance = scan()
-        if distance < 10:
+        if distance < 5:
             move_backward()
             time.sleep(1)
             turn_random_direction()
