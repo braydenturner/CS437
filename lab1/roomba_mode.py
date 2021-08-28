@@ -89,7 +89,7 @@ def main():
     fc.servo.set_angle(current_angle)
     while True:
         move_forward()
-        distance = scan()
+        distance = get_distance()
         if distance < 10:
             move_backward()
             time.sleep(1)
