@@ -3,6 +3,10 @@ import random
 from enum import Enum
 import time
 
+step = 15
+current_angle = 0
+scan_list = []
+
 class Direction(Enum):
     Left = 0
     Right = 1
@@ -31,14 +35,26 @@ def get_distance() -> int:
 
     return distance
 
-def scan(step: int = 30) -> list:
+def scan() -> float:
     """
-    Scans in front of the car and returns a list
-    :param step: the angle (degree) change of each scan
-    :return:
+    Scans in front of the car and returns the distance
+    :return: distance in cm
     """
+    global current_angle, step
+    max_angle = 90
+    min_angle = -90
 
-    return []
+    current_angle += step
+    if current_angle > max_angle:
+        current_angle = max_angle
+        step *= -1
+    elif current_angle < min_angle:
+        current_angle = min_angle
+        step *= -1
+
+    fc.servo.set_angle(current_angle)
+    distance = get_distance()
+    return distance
 
 
 def turn_random_direction():
@@ -72,9 +88,10 @@ def move_forward(power: int = 50):
 
 
 def main():
+    fc.servo.set_angle(current_angle)
     while True:
         move_forward()
-        distance = get_distance()
+        distance = scan()
         if distance < 10:
             move_backward()
             time.sleep(1)
