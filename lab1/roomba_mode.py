@@ -77,13 +77,13 @@ def turn_right(power: int = 50):
 
 
 def move_backward(power: int = 25):
+    global current_angle
+    current_angle = 0
+    fc.servo.set_angle(current_angle)
     fc.backward(power)
 
 
 def move_forward(power: int = 30):
-    global current_angle
-    current_angle = 0
-    fc.servo.set_angle(current_angle)
     fc.forward(power)
 
 
