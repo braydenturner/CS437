@@ -3,7 +3,7 @@ import random
 from enum import Enum
 import time
 
-step = 15
+step = 20
 current_angle = 0
 scan_list = []
 
@@ -78,10 +78,12 @@ def turn_right(power: int = 50):
 
 
 def move_backward(power: int = 15):
+    print("Moving backward")
     fc.backward(power)
 
 
 def move_forward(power: int = 20):
+    print("Moving forward")
     fc.forward(power)
 
 
