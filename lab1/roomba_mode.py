@@ -22,6 +22,7 @@ def get_distance() -> int:
     distance: int = fc.us.get_distance() #cm
     print(f"Distance: {distance}cm")
 
+    return distance
 
 def scan(step: int = 30) -> list:
     """
@@ -65,8 +66,8 @@ def move_forward(power: int = 50):
 def main():
     while True:
         move_forward()
-        distanceCM = get_distance()
-        if distanceCM < 10:
+        distance = get_distance()
+        if distance < 10:
             move_backward()
             time.sleep(1)
             turn_random_direction()
