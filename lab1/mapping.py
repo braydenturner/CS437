@@ -1,5 +1,5 @@
 from enum import Enum
-
+from os import system
 import picar_4wd as fc
 import numpy as np
 import time
@@ -66,11 +66,16 @@ class Ultrasonic:
 
     @staticmethod
     def mark_point(point: (int, int)):
+        global side_length
         x, y = point
-        print(f"Marking point({x},{y})")
 
-        # Swapped in matrix
-        world_map[y][x] = 1
+        if x < side_length and y < side_length:
+            print(f"Marking point({x},{y})")
+            # Swapped in matrix
+            world_map[y][x] = 1
+        else:
+            print(f"Point({x},{y}) out of bounds")
+
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> [(int, int)]:
@@ -190,13 +195,14 @@ class Movement:
 
 
 def main():
-    fc.start_speed_thread()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
 
+        system('clear')
+        print(world_map)
+        time.sleep(5)
         # Move in direction until object is hit
-
 
         # Turn
 
