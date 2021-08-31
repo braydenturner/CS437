@@ -109,8 +109,8 @@ class Ultrasonic:
         return distance
 
     @staticmethod
-    def interpolate_points(p1: (int, int), p2: (int, int)) -> [(int, int)]:
-        x_coord, y_coord = zip(p1, p2)
+    def interpolate_points(p1: [int, int], p2: [int, int]) -> [[int, int]]:
+        x_coord, y_coord = zip(p1, p2)[0], zip(p1, p2)[1]
         coefficients = np.polyfit(x_coord, y_coord, 1)
         slope, y_intercept = coefficients[0], coefficients[1]
 
@@ -119,7 +119,7 @@ class Ultrasonic:
         # find all points between 2 points to fill in
         for x in range(p1[0], p2[0]):
             y = int(slope * x + y_intercept)
-            points_to_fill_in.append((x, y))
+            points_to_fill_in.append([x, y])
 
         return points_to_fill_in
 
