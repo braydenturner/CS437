@@ -110,8 +110,8 @@ class Ultrasonic:
 
     @staticmethod
     def interpolate_points(p1: [int, int], p2: [int, int]) -> [[int, int]]:
+        print(f'Interpolating {p1} and {p2}')
         zipped = zip(p1, p2)
-        print(f'{zipped}')
         x_coord, y_coord = zipped
         coefficients = np.polyfit(x_coord, y_coord, 1)
         slope, y_intercept = coefficients[0], coefficients[1]
