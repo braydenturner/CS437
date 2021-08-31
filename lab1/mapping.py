@@ -1,64 +1,95 @@
 from enum import Enum
 
-import numpy
-
 import picar_4wd as fc
-import typing as T
-import types
-import random
 import numpy as np
 import time
 
-
-world_map = np.zeros(100 * np.zeros(100))
+# [y, x]
+side_length = 100
+world_map = np.zeros((side_length, side_length))
 step = 18
 current_servo_angle = 0
 current_car_angle = 0
-curr_position = (0,0)
+curr_position = (0, 0)
 
 
-'''
-Collection of functions to control and compute data from ultrasonic sensor
-'''
 class Ultrasonic:
+    """
+    Collection of functions to control and compute data from ultrasonic sensor
+    """
 
     @staticmethod
-    def scan() -> float:
+    def find_objects():
+        measurements = Ultrasonic.scan()
+        points = [Ultrasonic.compute_point(dist=measurement[0], angle=measurement[1]) for measurement in measurements]
+
+        global world_map
+        last_point = None
+
+        # Run through points found by sensor
+        for point in points:
+
+            # If point exists, mark as obstacle
+            if point is not None:
+                Ultrasonic.mark_point(point)
+
+                # If last point was marked, mark points in between
+                if last_point is not None:
+                    points_in_between = Ultrasonic.interpolate_points(point, last_point)
+                    for pnt in points_in_between:
+                        Ultrasonic.mark_point(pnt)
+
+            # Set this point as last checked point for interpolation
+            last_point = point
+
+    @staticmethod
+    def scan() -> [float]:
         """
-        Scans in front of the car and returns the distance
-        :return: distance in cm
+        Scans in front of the car
+        :return: list of distance and angles (cm, degrees)
         """
-        global current_angle, step
+        global step
         angle_range = 180
-        max_angle = angle_range / 2
+        max_angle: int = int(angle_range / 2)
         min_angle = max_angle * -1
 
-        current_angle += step
-        if current_angle > max_angle:
-            current_angle = max_angle
-            step *= -1
-        elif current_angle < min_angle:
-            current_angle = min_angle
-            step *= -1
+        # (distance, angle)
+        measurements: [(float, int)] = []
 
-        fc.servo.set_angle(current_angle)
-        distance = Ultrasonic.get_distance()
-        return distance
+        # Sweep from ni to max angle along step
+        for angle in range(min_angle, max_angle, step):
+            fc.servo.set_angle(angle)
+            distance = Ultrasonic.get_distance()
+            measurements.append((distance, angle))
 
+        return measurements
 
     @staticmethod
-    def compute_point(dist: float):
+    def mark_point(point: (int, int)):
+        x, y = point
+        print(f"Marking point({x},{y})")
+
+        # Swapped in matrix
+        world_map[y][x] = 1
+
+    @staticmethod
+    def compute_point(dist: float, angle: int) -> [(int, int)]:
         """
         Computes where the point is in space that is detected given the angle and curr position
         relative_point = (dist * sin(angle), dist * cos (angle))
         absolute_point = relative_point + curr_position
-        :return: None
+        :return: (x, y) coordinate
         """
-        global curr_position, current_servo_angle, current_car_angle
+        global curr_position, current_car_angle
 
-        relative_point = (dist * np.sin(current_servo_angle), dist * np.cos(current_servo_angle))
+        # filter out sensor limit readings
+        if np.abs(100 - dist) <= 10 :
+            return None
+        radians = np.deg2rad(angle)
+        relative_point = (dist * np.sin(radians), dist * np.cos(radians))
         absolute_point = relative_point + curr_position
 
+        return absolute_point
 
     @staticmethod
     def get_distance() -> int:
@@ -66,16 +97,31 @@ class Ultrasonic:
         Gets distance from sensor
         :return: distance in cm
         """
-        distance: int = fc.us.get_distance() #cm
+        distance: int = fc.us.get_distance()  # cm
         print(f"Distance: {distance}cm")
 
         return distance
 
+    @staticmethod
+    def interpolate_points(p1: (int, int), p2: (int, int)) -> [(int, int)]:
+        x_coord, y_coord = zip(p1, p2)
+        coefficients = np.polyfit(x_coord, y_coord, 1)
+        slope, y_intercept = coefficients[0], coefficients[1]
 
-'''
-Maintains location of car in space
-'''
+        points_to_fill_in = []
+
+        # find all points between 2 points to fill in
+        for x in range(p1[0], p2[0]):
+            y = int(slope * x + y_intercept)
+            points_to_fill_in.append((x, y))
+
+        return points_to_fill_in
+
+
 class Location:
+    """
+    Maintains location of car in space
+    """
 
     @staticmethod
     def update_location():
@@ -85,14 +131,12 @@ class Location:
         """
         global current_car_angle, curr_position
 
-
     @staticmethod
     def distance_traveled() -> int:
         """
         speed / time
         :return:
         """
-
 
     @staticmethod
     def speed() -> float:
@@ -104,10 +148,11 @@ class Location:
         return speed_reading
 
 
-'''
-Moves the car in each direction
-'''
 class Movement:
+    """
+    Moves the car in each direction
+    """
+
     class Direction(Enum):
 
         Left = 0
@@ -125,33 +170,36 @@ class Movement:
             else:
                 Movement.turn_right()
 
-
+    @staticmethod
     def turn_left(power: int = 50):
         fc.turn_left(power)
 
-
+    @staticmethod
     def turn_right(power: int = 50):
         fc.turn_right(power)
 
-
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
+    @staticmethod
     def move_backward(power: int = 15):
         fc.backward(power)
 
-
+    @staticmethod
     def move_forward(power: int = 50):
         fc.forward(power)
-
 
 
 def main():
     fc.start_speed_thread()
     while True:
-        # Scan 180 FOV
-        # Update map, interpolating points in between
-        #
-        #
+        # Scan 180 FOV, Update map, interpolate points in between
+        Ultrasonic.find_objects()
+
+        # Move in direction until object is hit
+
+
+        # Turn
+
         return
 
 
