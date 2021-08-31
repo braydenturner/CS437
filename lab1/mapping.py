@@ -10,7 +10,7 @@ world_map = np.zeros((side_length, side_length))
 step = 18
 current_servo_angle = 0
 current_car_angle = 0
-curr_position = (0, 0)
+curr_position = [50, 0]
 
 
 class Ultrasonic:
@@ -56,7 +56,7 @@ class Ultrasonic:
         # (distance, angle)
         measurements: [(float, int)] = []
 
-        # Sweep from ni to max angle along step
+        # Sweep from min to max angle along step
         for angle in range(min_angle, max_angle, step):
             fc.servo.set_angle(angle)
             distance = Ultrasonic.get_distance()
@@ -65,7 +65,7 @@ class Ultrasonic:
         return measurements
 
     @staticmethod
-    def mark_point(point: (int, int)):
+    def mark_point(point: [int, int]):
         global side_length
         x, y = point
 
@@ -78,7 +78,7 @@ class Ultrasonic:
 
 
     @staticmethod
-    def compute_point(dist: float, angle: int) -> [(int, int)]:
+    def compute_point(dist: float, angle: int) -> [[int, int]]:
         """
         Computes where the point is in space that is detected given the angle and curr position
         relative_point = (dist * sin(angle), dist * cos (angle))
@@ -91,7 +91,7 @@ class Ultrasonic:
         if np.abs(100 - dist) <= 10 :
             return None
         radians = np.deg2rad(angle)
-        relative_point = (dist * np.sin(radians), dist * np.cos(radians))
+        relative_point = [dist * np.sin(radians), dist * np.cos(radians)]
         absolute_point = relative_point + curr_position
 
         return absolute_point
