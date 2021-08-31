@@ -58,6 +58,7 @@ class Ultrasonic:
 
         # Sweep from min to max angle along step
         for angle in range(min_angle, max_angle, step):
+            print(f"Taking measurement at {angle}")
             fc.servo.set_angle(angle)
             distance = Ultrasonic.get_distance()
             measurements.append((distance, angle))
@@ -67,7 +68,7 @@ class Ultrasonic:
     @staticmethod
     def mark_point(point: [int, int]):
         global side_length
-        x, y = point[0], point[1]
+        x, y = np.round(point[0]), np.round(point[1])
 
         if x < side_length and y < side_length:
             print(f"Marking point({x},{y})")
