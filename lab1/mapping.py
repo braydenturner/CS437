@@ -67,7 +67,7 @@ class Ultrasonic:
     @staticmethod
     def mark_point(point: [int, int]):
         global side_length
-        x, y = point
+        x, y = point[0], point[1]
 
         if x < side_length and y < side_length:
             print(f"Marking point({x},{y})")
