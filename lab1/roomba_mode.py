@@ -5,7 +5,6 @@ import time
 
 step = 20
 current_angle = 0
-scan_list = []
 
 class Direction(Enum):
     Left = 0
@@ -17,7 +16,7 @@ class Direction(Enum):
         and turns in that direction
         :return: None
         """
-        seconds: float = random.uniform(.25, 1) * 2
+        seconds: float = random.uniform(.25, 1)
         if self == Direction.Left:
             turn_left()
         else:
