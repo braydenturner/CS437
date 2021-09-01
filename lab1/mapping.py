@@ -134,9 +134,8 @@ class Ultrasonic:
     @staticmethod
     def interpolate_points(p1: Point, p2: Point) -> [Point]:
         print(f'Interpolating {p1} and {p2}')
-        x_coord, y_coord = zip([p1.x, p2.y], [p2.x, p2.y])
-        coefficients = np.polyfit(x_coord, y_coord, 1)
-        slope, y_intercept = coefficients[0], coefficients[1]
+        slope = (p2.y - p1.y) / (p2.x - p1.x)
+        y_intercept = p1.y - slope * p1.x
         print (f"Slope {slope} and y-intercept {y_intercept}")
         points_to_fill_in = []
         sorted_x = sorted([p1.x, p2.x])
