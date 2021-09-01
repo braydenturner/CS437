@@ -83,6 +83,7 @@ class Ultrasonic:
         for angle in range(min_angle, max_angle, step):
             print(f"Taking measurement at {angle}")
             fc.servo.set_angle(angle)
+            time.sleep(0.1)
             distance = Ultrasonic.get_distance()
             measurements.append((distance, angle))
 
