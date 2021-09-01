@@ -28,7 +28,7 @@ class Point:
 # [y, x]
 side_length = 100
 world_map = np.zeros((side_length, side_length))
-step = 18
+step = 9
 current_servo_angle = 0
 current_car_angle = 0
 curr_position = Point(50, 0)
