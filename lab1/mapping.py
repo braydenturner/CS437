@@ -72,7 +72,7 @@ class Ultrasonic:
         :return: list of distance and angles (cm, degrees)
         """
         global step
-        angle_range = 180
+        angle_range = 140
         max_angle: int = int(angle_range / 2)
         min_angle = max_angle * -1
 
@@ -111,7 +111,7 @@ class Ultrasonic:
         global curr_position, current_car_angle
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 10:
+        if np.abs(100 - dist) <= 50:
             print(f"Filtering out {dist}")
             return None
         radians = np.deg2rad(angle)
