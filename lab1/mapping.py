@@ -72,7 +72,7 @@ class Ultrasonic:
         :return: list of distance and angles (cm, degrees)
         """
         global step
-        angle_range = 180
+        angle_range = 135
         max_angle: int = int(angle_range / 2)
         min_angle = max_angle * -1
 
