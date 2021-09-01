@@ -137,9 +137,10 @@ class Ultrasonic:
         slope, y_intercept = coefficients[0], coefficients[1]
 
         points_to_fill_in = []
+        sorted_x = sorted([p1.x, p2.x])
 
         # find all points between 2 points to fill in
-        for x in range(p1.x, p2.x):
+        for x in range(sorted_x[0], sorted_x[1]):
             y = slope * x + y_intercept
             new_pnt = Point(x, y)
             print(f"New Point {new_pnt}")
