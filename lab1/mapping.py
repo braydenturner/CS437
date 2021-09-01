@@ -223,9 +223,10 @@ def main():
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
 
-        # plt.imshow(world_map, interpolation='nearest')
+        plt.imshow(world_map, interpolation='nearest')
+        plt.savefig("map.png")
         # plt.show()
-        system("clear")
+
         print(world_map)
         time.sleep(5)
         # Move in direction until object is hit
