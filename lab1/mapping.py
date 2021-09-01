@@ -111,7 +111,7 @@ class Ultrasonic:
         global curr_position, current_car_angle
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 50 or dist < 0:
+        if np.abs(100 - dist) <= 25 or dist < 0:
             print(f"Filtering out {dist}")
             return None
         radians = np.deg2rad(angle)
