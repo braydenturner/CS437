@@ -7,10 +7,10 @@ step = 20
 current_angle = 0
 
 # Init motors
-left_front = fc.Motor(fc.PWM("P13"), fc.Pin("D4"), is_reversed=False) # motor 1
-right_front = fc.Motor(fc.PWM("P12"), fc.Pin("D5"), is_reversed=False) # motor 2
-left_rear = fc.Motor(fc.PWM("P8"), fc.Pin("D11"), is_reversed=False) # motor 3
-right_rear = fc.Motor(fc.PWM("P9"), fc.Pin("D15"), is_reversed=False) # motor 4
+left_front = Motor(PWM("P13"), Pin("D4"), is_reversed=False) # motor 1
+right_front = Motor(PWM("P12"), Pin("D5"), is_reversed=False) # motor 2
+left_rear = Motor(PWM("P8"), Pin("D11"), is_reversed=False) # motor 3
+right_rear = Motor(PWM("P9"), Pin("D15"), is_reversed=False) # motor 4
 
 class Direction(Enum):
     Left = 0
@@ -75,38 +75,29 @@ def turn_random_direction():
     direction.turn()
 
 
-def move_forward(power = 20):
-    print("Driving")
-    left_front.set_power(power)
-    left_rear.set_power(power)
-    right_front.set_power(power)
-    right_rear.set_power(power)
+def turn_left(power: int = 50):
+    fc.turn_left(power)
 
-def move_backward(power = 15):
+
+def turn_right(power: int = 50):
+    fc.turn_right(power)
+
+
+def move_backward(power: int = 15):
     print("Backing up")
-    left_front.set_power(-power)
-    left_rear.set_power(-power)
-    right_front.set_power(-power)
-    right_rear.set_power(-power)
+    fc.backward(power)
 
-def turn_left(power = 50):
-    left_front.set_power(-power)
-    left_rear.set_power(-power)
-    right_front.set_power(power)
-    right_rear.set_power(power)
 
-def turn_right(power= 50):
-    left_front.set_power(power)
-    left_rear.set_power(power)
-    right_front.set_power(-power)
-    right_rear.set_power(-power)
+def move_forward(power: int = 20):
+    print("Onward!")
+    fc.forward(power)
 
 
 def main():
     fc.servo.set_angle(current_angle)
     move_forward()
     while True:
-        distance = scan()
+        distance = get_distance()
         if distance < 10:
             fc.stop()
             move_backward()
