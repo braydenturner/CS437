@@ -1,6 +1,6 @@
 from enum import Enum
 from os import system
-from operator import add
+from matplotlib import pyplot as plt
 import picar_4wd as fc
 import numpy as np
 import time
@@ -215,14 +215,12 @@ def main():
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
 
-        system('clear')
-        print(world_map)
+        plt.imshow(world_map, interpolation='nearest')
+        plt.show()
         time.sleep(5)
         # Move in direction until object is hit
 
         # Turn
-
-        return
 
 
 if __name__ == "__main__":
