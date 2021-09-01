@@ -143,7 +143,7 @@ class Ultrasonic:
             y = slope * x + y_intercept
             new_pnt = Point(x, y)
             print(f"New Point {new_pnt}")
-            points_to_fill_in.append()
+            points_to_fill_in.append(new_pnt)
 
         print(f"Filling in points {points_to_fill_in}")
         return points_to_fill_in
