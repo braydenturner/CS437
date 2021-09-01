@@ -1,4 +1,4 @@
-from picar_4wd import *
+import picar_4wd as fc
 import random
 from enum import Enum
 import time
@@ -7,10 +7,10 @@ step = 20
 current_angle = 0
 
 # Init motors
-left_front = Motor(PWM("P13"), Pin("D4"), is_reversed=False) # motor 1
-right_front = Motor(PWM("P12"), Pin("D5"), is_reversed=False) # motor 2
-left_rear = Motor(PWM("P8"), Pin("D11"), is_reversed=False) # motor 3
-right_rear = Motor(PWM("P9"), Pin("D15"), is_reversed=False) # motor 4
+left_front = fc.Motor(fc.PWM("P13"), fc.Pin("D4"), is_reversed=False) # motor 1
+right_front = fc.Motor(fc.PWM("P12"), fc.Pin("D5"), is_reversed=False) # motor 2
+left_rear = fc.Motor(fc.PWM("P8"), fc.Pin("D11"), is_reversed=False) # motor 3
+right_rear = fc.Motor(fc.PWM("P9"), fc.Pin("D15"), is_reversed=False) # motor 4
 
 class Direction(Enum):
     Left = 0
@@ -35,7 +35,7 @@ def get_distance() -> int:
     Gets distance in front of car
     :return: distance in cm
     """
-    distance: int = us.get_distance() #cm
+    distance: int = fc.us.get_distance() #cm
     print(f"Distance: {distance}cm")
 
     return distance
@@ -59,7 +59,7 @@ def scan() -> float:
         current_angle = min_angle
         step *= -1
 
-    servo.set_angle(current_angle)
+    fc.servo.set_angle(current_angle)
     time.sleep(.1)
     distance = get_distance()
     return distance
@@ -103,17 +103,17 @@ def turn_right(power):
 
 
 def main():
-    servo.set_angle(current_angle)
+    fc.servo.set_angle(current_angle)
     move_forward()
     while True:
         distance = get_distance()
         if distance < 10:
-            stop()
+            fc.stop()
             move_backward()
             time.sleep(.75)
-            stop()
+            fc.stop()
             turn_random_direction()
-            stop()
+            fc.stop()
             move_forward()
 
 
@@ -121,4 +121,4 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        stop()
+        fc.stop()
