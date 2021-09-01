@@ -16,31 +16,28 @@ class ObjectRecognition:
         self.interpreter.allocate_tensors()
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
 
-    @staticmethod
-    def set_input_tensor(interpreter, image):
+    def set_input_tensor(self, image):
         """Sets the input tensor."""
-        tensor_index = interpreter.get_input_details()[0]['index']
-        input_tensor = interpreter.tensor(tensor_index)()[0]
+        tensor_index = self.interpreter.get_input_details()[0]['index']
+        input_tensor = self.interpreter.tensor(tensor_index)()[0]
         input_tensor[:, :] = image
 
-    @staticmethod
-    def get_output_tensor(interpreter, index):
+    def get_output_tensor(self, index):
         """Returns the output tensor at the given index."""
-        output_details = interpreter.get_output_details()[index]
-        tensor = np.squeeze(interpreter.get_tensor(output_details['index']))
+        output_details = self.interpreter.get_output_details()[index]
+        tensor = np.squeeze(self.interpreter.get_tensor(output_details['index']))
         return tensor
-
 
     def detect_objects(self, image, threshold):
         """Returns a list of detection results, each a dictionary of object info."""
-        ObjectRecognition.set_input_tensor(self.interpreter, image)
+        self.set_input_tensor(image)
         self.interpreter.invoke()
 
         # Get all output details
-        boxes = ObjectRecognition.get_output_tensor(self.interpreter, 0)
-        classes = ObjectRecognition.get_output_tensor(self.interpreter, 1)
-        scores = ObjectRecognition.get_output_tensor(self.interpreter, 2)
-        count = int(ObjectRecognition.get_output_tensor(self.interpreter, 3))
+        boxes = self.get_output_tensor(0)
+        classes = self.get_output_tensor(1)
+        scores = self.get_output_tensor(2)
+        count = int(self.get_output_tensor(3))
 
         results = []
         for i in range(count):
@@ -61,7 +58,7 @@ class ObjectRecognition:
                     stream, format='jpeg', use_video_port=True):
                 image = Image.open(stream).convert('RGB').resize(
                     (self.input_width, self.input_height), Image.ANTIALIAS)
-                results = self.detect_objects(self.interpreter, image, 0.4)
+                results = self.detect_objects(image, 0.4)
                 print(results)
                 stream.seek(0)
                 stream.truncate()
