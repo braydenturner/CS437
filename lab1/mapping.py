@@ -136,7 +136,7 @@ class Ultrasonic:
         print(f'Interpolating {p1} and {p2}')
         if p2.x - p1.x == 0:
             print(f'Infinite slope')
-            return
+            return []
         slope = (p2.y - p1.y) / (p2.x - p1.x)
         y_intercept = p1.y - slope * p1.x
         print (f"Slope {slope} and y-intercept {y_intercept}")
