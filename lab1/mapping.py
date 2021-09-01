@@ -1,8 +1,22 @@
 from enum import Enum
 from os import system
+from operator import add
 import picar_4wd as fc
 import numpy as np
 import time
+
+
+class Point:
+    x: int
+    y: int
+
+    def __init__(self, x: int, y: int):
+        self.x = int(x)
+        self.y = int(y)
+
+    def __add__(self, other):
+        return Point(self.x + other.x,  self.y + other.y)
+
 
 # [y, x]
 side_length = 100
@@ -10,7 +24,9 @@ world_map = np.zeros((side_length, side_length))
 step = 18
 current_servo_angle = 0
 current_car_angle = 0
-curr_position = [50, 0]
+curr_position = Point(50, 0)
+
+
 
 
 class Ultrasonic:
@@ -66,20 +82,18 @@ class Ultrasonic:
         return measurements
 
     @staticmethod
-    def mark_point(point: [int, int]):
+    def mark_point(point: Point):
         global side_length
-        x, y = int(point[0]), int(point[1])
 
-        if x < side_length and y < side_length:
-            print(f"Marking point({x},{y})")
+        if point.x < side_length and point.y < side_length:
+            print(f"Marking point ({point.x},{point.y})")
             # Swapped in matrix
-            world_map[y][x] = 1
+            world_map[point.y][point.x] = 1
         else:
-            print(f"Point({x},{y}) out of bounds")
-
+            print(f"Point({point.x},{point.y}) out of bounds")
 
     @staticmethod
-    def compute_point(dist: float, angle: int) -> [[int, int]]:
+    def compute_point(dist: float, angle: int) -> Point:
         """
         Computes where the point is in space that is detected given the angle and curr position
         relative_point = (dist * sin(angle), dist * cos (angle))
@@ -92,7 +106,7 @@ class Ultrasonic:
         if np.abs(100 - dist) <= 10 :
             return None
         radians = np.deg2rad(angle)
-        relative_point = [dist * np.sin(radians), dist * np.cos(radians)]
+        relative_point = Point(dist * np.sin(radians), dist * np.cos(radians))
         absolute_point = relative_point + curr_position
 
         return absolute_point
@@ -109,19 +123,18 @@ class Ultrasonic:
         return distance
 
     @staticmethod
-    def interpolate_points(p1: [int, int], p2: [int, int]) -> [[int, int]]:
+    def interpolate_points(p1: Point, p2: Point) -> [Point]:
         print(f'Interpolating {p1} and {p2}')
-        zipped = zip(p1, p2)
-        x_coord, y_coord = zipped
+        x_coord, y_coord = zip([p1.x, p2.y], [p2.x, p2.y])
         coefficients = np.polyfit(x_coord, y_coord, 1)
         slope, y_intercept = coefficients[0], coefficients[1]
 
         points_to_fill_in = []
 
         # find all points between 2 points to fill in
-        for x in range(p1[0], p2[0]):
-            y = int(slope * x + y_intercept)
-            points_to_fill_in.append([x, y])
+        for x in range(p1.x, p2.x):
+            y = slope * x + y_intercept
+            points_to_fill_in.append(Point(x, y))
 
         return points_to_fill_in
 
