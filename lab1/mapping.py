@@ -134,6 +134,9 @@ class Ultrasonic:
     @staticmethod
     def interpolate_points(p1: Point, p2: Point) -> [Point]:
         print(f'Interpolating {p1} and {p2}')
+        if p2.x - p1.x == 0:
+            print(f'Infinite slope')
+            return
         slope = (p2.y - p1.y) / (p2.x - p1.x)
         y_intercept = p1.y - slope * p1.x
         print (f"Slope {slope} and y-intercept {y_intercept}")
