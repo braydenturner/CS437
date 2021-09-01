@@ -54,7 +54,7 @@ def scan() -> float:
         step *= -1
 
     fc.servo.set_angle(current_angle)
-    time.sleep(.04)
+    time.sleep(.05)
     distance = get_distance()
     return distance
 

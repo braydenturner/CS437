@@ -83,7 +83,7 @@ class Ultrasonic:
         for angle in range(min_angle, max_angle, step):
             print(f"Taking measurement at {angle}")
             fc.servo.set_angle(angle)
-            time.sleep(0.1)
+            time.sleep(0.2)
             distance = Ultrasonic.get_distance()
             measurements.append((distance, angle))
 
@@ -111,7 +111,7 @@ class Ultrasonic:
         global curr_position, current_car_angle
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 50:
+        if np.abs(100 - dist) <= 10:
             print(f"Filtering out {dist}")
             return None
         radians = np.deg2rad(angle)
