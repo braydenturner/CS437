@@ -111,7 +111,8 @@ class Ultrasonic:
         global curr_position, current_car_angle
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 10 :
+        if np.abs(100 - dist) <= 50:
+            print(f"Filtering out {dist}")
             return None
         radians = np.deg2rad(angle)
         relative_point = Point(dist * np.sin(radians), dist * np.cos(radians))
@@ -136,7 +137,7 @@ class Ultrasonic:
         x_coord, y_coord = zip([p1.x, p2.y], [p2.x, p2.y])
         coefficients = np.polyfit(x_coord, y_coord, 1)
         slope, y_intercept = coefficients[0], coefficients[1]
-
+        print (f"Slope {slope} and y-intercept {y_intercept}")
         points_to_fill_in = []
         sorted_x = sorted([p1.x, p2.x])
 
@@ -147,7 +148,6 @@ class Ultrasonic:
             print(f"New Point {new_pnt}")
             points_to_fill_in.append(new_pnt)
 
-        print(f"Filling in points {points_to_fill_in}")
         return points_to_fill_in
 
 
@@ -231,7 +231,6 @@ def main():
         plt.savefig("map.png")
         # plt.show()
 
-        print(world_map)
         time.sleep(5)
         # Move in direction until object is hit
 
