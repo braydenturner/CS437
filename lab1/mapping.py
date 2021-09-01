@@ -4,6 +4,10 @@ from matplotlib import pyplot as plt
 import picar_4wd as fc
 import numpy as np
 import time
+import sys
+
+
+np.set_printoptions(threshold=sys.maxsize)
 
 
 class Point:
@@ -16,6 +20,9 @@ class Point:
 
     def __add__(self, other):
         return Point(self.x + other.x,  self.y + other.y)
+
+    def __str__(self):
+        return f"({self.x},{self.y})"
 
 
 # [y, x]
@@ -86,11 +93,11 @@ class Ultrasonic:
         global side_length
 
         if point.x < side_length and point.y < side_length:
-            print(f"Marking point ({point.x},{point.y})")
+            print(f"Marking point ({point})")
             # Swapped in matrix
             world_map[point.y][point.x] = 1
         else:
-            print(f"Point({point.x},{point.y}) out of bounds")
+            print(f"Point({point}) out of bounds")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -136,6 +143,7 @@ class Ultrasonic:
             y = slope * x + y_intercept
             points_to_fill_in.append(Point(x, y))
 
+        print(f"Filling in points {points_to_fill_in}")
         return points_to_fill_in
 
 
@@ -215,8 +223,10 @@ def main():
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
 
-        plt.imshow(world_map, interpolation='nearest')
-        plt.show()
+        # plt.imshow(world_map, interpolation='nearest')
+        # plt.show()
+        system("clear")
+        print(world_map)
         time.sleep(5)
         # Move in direction until object is hit
 
