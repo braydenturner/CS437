@@ -1,10 +1,16 @@
-import picar_4wd as fc
+from picar_4wd import *
 import random
 from enum import Enum
 import time
 
 step = 20
 current_angle = 0
+
+# Init motors
+left_front = Motor(PWM("P13"), Pin("D4"), is_reversed=False) # motor 1
+right_front = Motor(PWM("P12"), Pin("D5"), is_reversed=False) # motor 2
+left_rear = Motor(PWM("P8"), Pin("D11"), is_reversed=False) # motor 3
+right_rear = Motor(PWM("P9"), Pin("D15"), is_reversed=False) # motor 4
 
 class Direction(Enum):
     Left = 0
@@ -69,22 +75,31 @@ def turn_random_direction():
     direction.turn()
 
 
-def turn_left(power: int = 50):
-    fc.turn_left(power)
+def forward(power):
+    print("Driving")
+    left_front.set_power(power)
+    left_rear.set_power(power)
+    right_front.set_power(power)
+    right_rear.set_power(power)
 
-
-def turn_right(power: int = 50):
-    fc.turn_right(power)
-
-
-def move_backward(power: int = 15):
+def backward(power):
     print("Backing up")
-    fc.backward(power)
+    left_front.set_power(-power)
+    left_rear.set_power(-power)
+    right_front.set_power(-power)
+    right_rear.set_power(-power)
 
+def turn_left(power):
+    left_front.set_power(-power)
+    left_rear.set_power(-power)
+    right_front.set_power(power)
+    right_rear.set_power(power)
 
-def move_forward(power: int = 20):
-    print("Onward!")
-    fc.forward(power)
+def turn_right(power):
+    left_front.set_power(power)
+    left_rear.set_power(power)
+    right_front.set_power(-power)
+    right_rear.set_power(-power)
 
 
 def main():
