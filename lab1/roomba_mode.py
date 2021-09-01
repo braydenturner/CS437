@@ -6,12 +6,6 @@ import time
 step = 20
 current_angle = 0
 
-# Init motors
-left_front = Motor(PWM("P13"), Pin("D4"), is_reversed=False) # motor 1
-right_front = Motor(PWM("P12"), Pin("D5"), is_reversed=False) # motor 2
-left_rear = Motor(PWM("P8"), Pin("D11"), is_reversed=False) # motor 3
-right_rear = Motor(PWM("P9"), Pin("D15"), is_reversed=False) # motor 4
-
 class Direction(Enum):
     Left = 0
     Right = 1
@@ -97,7 +91,7 @@ def main():
     fc.servo.set_angle(current_angle)
     move_forward()
     while True:
-        distance = get_distance()
+        distance = scan()
         if distance < 10:
             fc.stop()
             move_backward()
