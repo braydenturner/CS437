@@ -226,7 +226,7 @@ def main():
         Ultrasonic.find_objects()
 
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("~/Desktop/map.png")
+        plt.savefig("map.png")
         # plt.show()
 
         print(world_map)
