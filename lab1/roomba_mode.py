@@ -75,27 +75,27 @@ def turn_random_direction():
     direction.turn()
 
 
-def move_forward(power):
+def move_forward(power = 20):
     print("Driving")
     left_front.set_power(power)
     left_rear.set_power(power)
     right_front.set_power(power)
     right_rear.set_power(power)
 
-def move_backward(power):
+def move_backward(power = 15):
     print("Backing up")
     left_front.set_power(-power)
     left_rear.set_power(-power)
     right_front.set_power(-power)
     right_rear.set_power(-power)
 
-def turn_left(power):
+def turn_left(power = 50):
     left_front.set_power(-power)
     left_rear.set_power(-power)
     right_front.set_power(power)
     right_rear.set_power(power)
 
-def turn_right(power):
+def turn_right(power= 50):
     left_front.set_power(power)
     left_rear.set_power(power)
     right_front.set_power(-power)
