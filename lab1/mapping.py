@@ -34,8 +34,6 @@ current_car_angle = 0
 curr_position = Point(50, 0)
 
 
-
-
 class Ultrasonic:
     """
     Collection of functions to control and compute data from ultrasonic sensor
@@ -61,6 +59,8 @@ class Ultrasonic:
                     points_in_between = Ultrasonic.interpolate_points(point, last_point)
                     for pnt in points_in_between:
                         Ultrasonic.mark_point(pnt)
+            else:
+                print("Missed")
 
             # Set this point as last checked point for interpolation
             last_point = point
@@ -141,7 +141,9 @@ class Ultrasonic:
         # find all points between 2 points to fill in
         for x in range(p1.x, p2.x):
             y = slope * x + y_intercept
-            points_to_fill_in.append(Point(x, y))
+            new_pnt = Point(x, y)
+            print(f"New Point {new_pnt}")
+            points_to_fill_in.append()
 
         print(f"Filling in points {points_to_fill_in}")
         return points_to_fill_in
@@ -224,7 +226,7 @@ def main():
         Ultrasonic.find_objects()
 
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("map.png")
+        plt.savefig("~/Desktop/map.png")
         # plt.show()
 
         print(world_map)
