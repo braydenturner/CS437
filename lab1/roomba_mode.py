@@ -35,7 +35,7 @@ def get_distance() -> int:
     Gets distance in front of car
     :return: distance in cm
     """
-    distance: int = fc.us.get_distance() #cm
+    distance: int = us.get_distance() #cm
     print(f"Distance: {distance}cm")
 
     return distance
@@ -59,7 +59,7 @@ def scan() -> float:
         current_angle = min_angle
         step *= -1
 
-    fc.servo.set_angle(current_angle)
+    servo.set_angle(current_angle)
     time.sleep(.1)
     distance = get_distance()
     return distance
@@ -75,14 +75,14 @@ def turn_random_direction():
     direction.turn()
 
 
-def forward(power):
+def move_forward(power):
     print("Driving")
     left_front.set_power(power)
     left_rear.set_power(power)
     right_front.set_power(power)
     right_rear.set_power(power)
 
-def backward(power):
+def move_backward(power):
     print("Backing up")
     left_front.set_power(-power)
     left_rear.set_power(-power)
@@ -103,17 +103,17 @@ def turn_right(power):
 
 
 def main():
-    fc.servo.set_angle(current_angle)
+    servo.set_angle(current_angle)
     move_forward()
     while True:
         distance = get_distance()
         if distance < 10:
-            fc.stop()
+            stop()
             move_backward()
             time.sleep(.75)
-            fc.stop()
+            stop()
             turn_random_direction()
-            fc.stop()
+            stop()
             move_forward()
 
 
@@ -121,4 +121,4 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        fc.stop()
+        stop()
