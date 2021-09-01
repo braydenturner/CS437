@@ -93,9 +93,12 @@ def main():
     while True:
         distance = scan()
         if distance < 10:
+            fc.stop()
             move_backward()
             time.sleep(.75)
+            fc.stop()
             turn_random_direction()
+            fc.stop()
             move_forward()
 
 
