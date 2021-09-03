@@ -89,16 +89,13 @@ def move_forward(power: int = 10):
 
 def main():
     fc.servo.set_angle(current_angle)
-    move_forward()
     while True:
         distance = scan()
+        move_forward()
         if distance < 15:
-            fc.stop()
             move_backward()
             time.sleep(.75)
-            fc.stop()
             turn_random_direction()
-            fc.stop()
             move_forward()
 
 

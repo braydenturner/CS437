@@ -28,7 +28,7 @@ class Point:
 # [y, x]
 side_length = 100
 world_map = np.zeros((side_length, side_length))
-step = 5
+step = 10
 current_servo_angle = 0
 current_car_angle = 0
 curr_position = Point(50, 0)
@@ -111,7 +111,7 @@ class Ultrasonic:
         global curr_position, current_car_angle
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 30 or dist < 0:
+        if np.abs(100 - dist) <= 50 or dist < 0:
             print(f"Filtering out {dist}")
             return None
         radians = np.deg2rad(angle)
