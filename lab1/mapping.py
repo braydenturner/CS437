@@ -1,5 +1,5 @@
 from enum import Enum
-from os import system
+from point import Point
 from matplotlib import pyplot as plt
 from webpage import WepPage
 import picar_4wd as fc
@@ -10,22 +10,6 @@ from multiprocessing import Process
 
 
 np.set_printoptions(threshold=sys.maxsize)
-
-
-class Point:
-    x: int
-    y: int
-
-    def __init__(self, x: float, y: float):
-        self.x = int(x)
-        self.y = int(y)
-
-    def __add__(self, other):
-        return Point(self.x + other.x,  self.y + other.y)
-
-    def __str__(self):
-        return f"({self.x},{self.y})"
-
 
 class Orientation(Enum):
     North = 0
@@ -241,6 +225,7 @@ class Movement:
     @staticmethod
     def turn_right(power: int = 50):
         fc.turn_right(power)
+        time.sleep(.55)
 
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
@@ -251,6 +236,7 @@ class Movement:
     @staticmethod
     def move_forward(power: int = 10):
         fc.forward(power)
+        time.sleep(.55)
         Location.monitor_location()
 
 
