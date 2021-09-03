@@ -41,7 +41,7 @@ class Ultrasonic:
 
     @staticmethod
     def find_objects():
-        measurements = Ultrasonic.scan()
+        measurements = Ultrasonic.mapping_scan()
         points = [Ultrasonic.compute_point(dist=measurement[0], angle=measurement[1]) for measurement in measurements]
 
         global world_map
@@ -265,16 +265,16 @@ def main():
         time.sleep(5)
 
         # Move in direction until object is hit, measuring distance
-        speeds = []
-        Movement.move_forward()
-        start_time = time.perf_counter()
-        while Ultrasonic.get_distance() > 10:
-            speeds.append(Location.speed())
-        fc.stop()
-        elapsed_time = time.perf_counter() - start_time
-        distance = Location.distance_traveled(elapsed_time, speeds)
-
-        Location.update_location(current_car_angle, distance)
+        # speeds = []
+        # Movement.move_forward()
+        # start_time = time.perf_counter()
+        # while Ultrasonic.get_distance() > 10:
+        #     speeds.append(Location.speed())
+        # fc.stop()
+        # elapsed_time = time.perf_counter() - start_time
+        # distance = Location.distance_traveled(elapsed_time, speeds)
+        #
+        # Location.update_location(current_car_angle, distance)
 
         # Turn
 
