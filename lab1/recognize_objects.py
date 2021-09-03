@@ -74,7 +74,8 @@ class ObjectRecognition:
                 results.append(result)
         return results
 
-    def label_from_classId(self, classId):
+    def label_from_class_id(self, classId):
+        return self.labels[classId]
 
     def detect(self):
         stream = io.BytesIO()

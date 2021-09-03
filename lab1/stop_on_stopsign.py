@@ -7,7 +7,7 @@ import picamera
 def main():
     with ObjectRecognition() as recognizer:
         while True:
-            recognized_objects = [recognizer.label_from_classId(recognized_object["class_id"]) for recognized_object in recognizer.detect()]
+            recognized_objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in recognizer.detect()]
             print(recognized_objects)
             if "stop sign" in recognized_objects:
                 fc.stop()
