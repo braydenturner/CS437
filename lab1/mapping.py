@@ -330,6 +330,7 @@ class Location:
 
 
 def main():
+    Process(target=WepPage.run).start()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
@@ -339,9 +340,7 @@ def main():
         plt.savefig("/home/pi/map.png")
         # plt.show()
 
-        x = Process(target=WepPage.run)
-        x.start()
-        x.join(5)
+        time.sleep(5)
         # Move in direction until object is hit, measuring distance
 
 
