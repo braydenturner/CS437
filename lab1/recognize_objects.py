@@ -6,17 +6,20 @@ import picamera
 import re
 
 
-CAMERA_WIDTH = 640
-CAMERA_HEIGHT = 480
-
-
 class ObjectRecognition:
+
+    CAMERA_WIDTH = 640
+    CAMERA_HEIGHT = 480
 
     def __init__(self, model="/tmp/detect.tflite"):
         self.interpreter = Interpreter("/tmp/detect.tflite")
         self.interpreter.allocate_tensors()
         self.labels = ObjectRecognition.load_labels("/tmp/coco_labels.txt")
+        self.camera = picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30)
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
+
+    def __del__(self):
+        self.camera.close()
 
     @staticmethod
     def load_labels(path):
@@ -67,7 +70,17 @@ class ObjectRecognition:
         return results
 
     def detect(self):
-        with picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:
+        stream = io.BytesIO()
+        capture = self.camera.capture(stream, format='jpeg', use_video_port=True)
+        image = Image.open(stream).convert('RGB').resize(
+            (self.input_width, self.input_height), Image.ANTIALIAS)
+        results = self.detect_objects(image, 0.4)
+        stream.seek(0)
+        stream.truncate()
+        return results
+
+    def detect_continuous(self):
+        with picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30) as camera:
             stream = io.BytesIO()
             for _ in camera.capture_continuous(
                     stream, format='jpeg', use_video_port=True):
