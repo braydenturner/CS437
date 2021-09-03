@@ -8,6 +8,7 @@ def main():
     with ObjectRecognition() as recognizer:
         while True:
             recognized_objects = [recognized_object["class_id"] for recognized_object in recognizer.detect()]
+            print(recognized_objects)
             if "stop sign" in recognized_objects:
                 fc.stop()
             else:
