@@ -1,7 +1,5 @@
 import numpy as np
 from tflite_runtime.interpreter import Interpreter
-from PIL import Image
-import io
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
@@ -23,8 +21,6 @@ class ObjectRecognition:
 
     def __enter__(self):
         return self
-
-    # ...
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.camera.close()
@@ -81,25 +77,30 @@ class ObjectRecognition:
         return self.labels[classId]
 
     def detect(self):
-        stream = io.BytesIO()
-        capture = self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
-        image = Image.open(stream).convert('RGB').resize(
-            (self.input_width, self.input_height), Image.ANTIALIAS)
-        results = self.detect_objects(image, 0.4)
-        stream.seek(0)
-        stream.truncate()
+        frame = self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
+        image = frame.array
+
+        # Resize
+        inp = cv2.resize(image, (self.input_width, self.input_height))
+
+        #Convert img to RGB
+        rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+        results = self.detect_objects(rgb, 0.8)
+        self.rawCapture.truncate(0)
         return results
 
     def detect_continuous(self):
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             image = frame.array
 
+            # Resize
             inp = cv2.resize(image, (self.input_width, self.input_height))
 
             #Convert img to RGB
             rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 
-            results = self.detect_objects(rgb, 0.4)
+            results = self.detect_objects(rgb, 0.8)
             objects = [(self.labels[result['class_id']], result['score']) for result in results]
             print(objects)
             self.rawCapture.truncate(0)

@@ -1,10 +1,12 @@
 from enum import Enum
 from os import system
 from matplotlib import pyplot as plt
+from webpage import WepPage
 import picar_4wd as fc
 import numpy as np
 import time
 import sys
+import asyncio
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -14,7 +16,7 @@ class Point:
     x: int
     y: int
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: float, y: float):
         self.x = int(x)
         self.y = int(y)
 
@@ -25,13 +27,20 @@ class Point:
         return f"({self.x},{self.y})"
 
 
+class Orientation(Enum):
+    North = 0
+    East = 1
+    South = 2
+    West = 3
+
+
 # [y, x]
 side_length = 100
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
-current_car_angle = 0
 curr_position = Point(50, 0)
+curr_orientation = Orientation.North
 
 
 class Ultrasonic:
@@ -108,14 +117,40 @@ class Ultrasonic:
         absolute_point = relative_point + curr_position
         :return: (x, y) coordinate
         """
-        global curr_position, current_car_angle
 
         # filter out sensor limit readings
         if np.abs(100 - dist) <= 50 or dist < 0:
             print(f"Filtering out {dist}")
             return None
+
+
+        global curr_position, curr_orientation
+
         radians = np.deg2rad(angle)
-        relative_point = Point(dist * np.sin(radians), dist * np.cos(radians))
+        # x and y from car's reference frame
+        x = dist * np.sin(radians)
+        y = dist * np.cos(radians)
+
+        """
+        Below are the transformations done to the map reference
+        For example, if the car is facing east and sees something 
+        directly in front of it at 13cm, this translates to a +13cm
+        in the x direction on the board (locked to the world)
+        
+        """
+        if curr_orientation == Orientation.North:
+            # (x, y)
+            relative_point = Point(x, y)
+        elif curr_orientation == Orientation.East:
+            # (y, -x)
+            relative_point = Point(y, x * -1)
+        elif curr_orientation == Orientation.South:
+            # (-x, -y)
+            relative_point = Point(-1 * x, -1 * y)
+        elif curr_orientation == Orientation.West:
+            # (-y, x)
+            relative_point = Point(-1 * y, x)
+
         absolute_point = relative_point + curr_position
 
         return absolute_point
@@ -177,41 +212,6 @@ class Ultrasonic:
         return distance
 
 
-class Location:
-    """
-    Maintains location of car in space
-    """
-
-    @staticmethod
-    def update_location(new_angle: int, new_location: Point):
-        """
-
-        :return:
-        """
-        global current_car_angle, curr_position
-        current_car_angle, curr_position = new_angle, new_location
-
-    @staticmethod
-    def distance_traveled(time_elapsed, speed_intervals) -> int:
-        """
-        speed / time
-        :return: distance in cm
-        """
-
-        mean_speed = np.mean(speed_intervals)
-
-        return mean_speed * time_elapsed
-
-    @staticmethod
-    def speed() -> float:
-        """
-        :return: speed in cm/s
-        """
-        speed_reading = fc.speed_val()
-        print(f"Current speed: {speed_reading} cm/s")
-        return speed_reading
-
-
 class Movement:
     """
     Moves the car in each direction
@@ -253,30 +253,100 @@ class Movement:
         fc.forward(power)
 
 
+class Location:
+    """
+    Maintains location of car in space
+    """
+
+    @staticmethod
+    def monitor_location():
+        speeds = []
+        start_time = time.perf_counter()
+        while Ultrasonic.get_distance() > 10:
+            speeds.append(Location.speed())
+        fc.stop()
+        elapsed_time = time.perf_counter() - start_time
+        distance = Location.distance_traveled(elapsed_time, speeds)
+
+        Location.update_location(distance)
+
+    @staticmethod
+    def update_location(new_location: float):
+        """
+
+        :return:
+        """
+
+        global curr_orientation, curr_position
+        if curr_orientation == Orientation.North:
+            # (x, y)
+            relative_point = Point(0, new_location)
+        elif curr_orientation == Orientation.East:
+            # (y, -x)
+            relative_point = Point(new_location, 0)
+        elif curr_orientation == Orientation.South:
+            # (-x, -y)
+            relative_point = Point(0, -1 * new_location)
+        elif curr_orientation == Orientation.West:
+            # (-y, x)
+            relative_point = Point(new_location, 0)
+
+        curr_position += relative_point
+
+
+    @staticmethod
+    def update_orientation(turn_direction: Movement.Direction):
+        """
+
+        :return:
+        """
+
+        global curr_orientation
+
+        if turn_direction == Movement.Direction.Left:
+            curr_orientation = (curr_orientation - 1) % 4
+        else:
+            curr_orientation = (curr_orientation + 1) % 4
+
+    @staticmethod
+    def distance_traveled(time_elapsed, speed_intervals) -> int:
+        """
+        speed / time
+        :return: distance in cm
+        """
+
+        mean_speed = np.mean(speed_intervals)
+
+        return mean_speed * time_elapsed
+
+    @staticmethod
+    def speed() -> float:
+        """
+        :return: speed in cm/s
+        """
+        speed_reading = fc.speed_val()
+        print(f"Current speed: {speed_reading} cm/s")
+        return speed_reading
+
+
 def main():
+    asyncio.run(WepPage.run())
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
 
+        # Save image
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("map.png")
+        plt.savefig("static/images/map.png")
         # plt.show()
 
         time.sleep(5)
 
         # Move in direction until object is hit, measuring distance
-        # speeds = []
-        # Movement.move_forward()
-        # start_time = time.perf_counter()
-        # while Ultrasonic.get_distance() > 10:
-        #     speeds.append(Location.speed())
-        # fc.stop()
-        # elapsed_time = time.perf_counter() - start_time
-        # distance = Location.distance_traveled(elapsed_time, speeds)
-        #
-        # Location.update_location(current_car_angle, distance)
+
 
         # Turn
+
 
 
 if __name__ == "__main__":
