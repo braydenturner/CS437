@@ -35,7 +35,7 @@ class Orientation(Enum):
 
 
 # [y, x]
-side_length = 100
+side_length = 500
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
@@ -245,12 +245,13 @@ class Movement:
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
     @staticmethod
-    def move_backward(power: int = 15):
+    def move_backward(power: int = 10):
         fc.backward(power)
 
     @staticmethod
-    def move_forward(power: int = 50):
+    def move_forward(power: int = 10):
         fc.forward(power)
+        Location.monitor_location()
 
 
 class Location:
@@ -293,6 +294,7 @@ class Location:
 
         curr_position += relative_point
 
+        print(f"New position {curr_position}")
 
     @staticmethod
     def update_orientation(turn_direction: Movement.Direction):
@@ -316,8 +318,10 @@ class Location:
         """
 
         mean_speed = np.mean(speed_intervals)
+        distance =  mean_speed * time_elapsed
+        print(f"Distance traveled {distance}cm")
 
-        return mean_speed * time_elapsed
+        return distance
 
     @staticmethod
     def speed() -> float:
@@ -340,8 +344,9 @@ def main():
         plt.savefig("/home/pi/Desktop/map.png")
         # plt.show()
 
-        time.sleep(5)
+
         # Move in direction until object is hit, measuring distance
+        Movement.move_forward()
 
 
         # Turn
