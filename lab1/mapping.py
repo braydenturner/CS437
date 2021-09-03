@@ -336,11 +336,12 @@ def main():
 
         # Save image
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("static/images/map.png")
+        plt.savefig("/home/pi/map.png")
         # plt.show()
 
-        time.sleep(5)
-
+        x = threading.Thread(target=WepPage.run)
+        x.start()
+        x.join(5)
         # Move in direction until object is hit, measuring distance
 
 
@@ -350,7 +351,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        threading.Thread(target=main).start()
-        WepPage.run()
+        main()
     finally:
         fc.stop()
