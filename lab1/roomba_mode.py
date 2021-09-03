@@ -41,7 +41,7 @@ def scan() -> float:
     :return: distance in cm
     """
     global current_angle, step
-    angle_range = 180
+    angle_range = 140
     max_angle = angle_range / 2
     min_angle = max_angle * -1
 
