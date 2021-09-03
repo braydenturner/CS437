@@ -77,12 +77,12 @@ def turn_right(power: int = 50):
     fc.turn_right(power)
 
 
-def move_backward(power: int = 15):
+def move_backward(power: int = 10):
     print("Backing up")
     fc.backward(power)
 
 
-def move_forward(power: int = 15):
+def move_forward(power: int = 10):
     print("Onward!")
     fc.forward(power)
 
