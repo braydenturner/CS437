@@ -12,9 +12,9 @@ class ObjectRecognition:
     CAMERA_HEIGHT = 480
 
     def __init__(self, model="/tmp/detect.tflite"):
-        self.interpreter = Interpreter("/tmp/detect.tflite")
+        self.interpreter = Interpreter("models/detect.tflite")
         self.interpreter.allocate_tensors()
-        self.labels = ObjectRecognition.load_labels("/tmp/coco_labels.txt")
+        self.labels = ObjectRecognition.load_labels("models/coco_labels.txt")
         self.camera = picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30)
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
 
