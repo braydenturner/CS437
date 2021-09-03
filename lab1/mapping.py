@@ -330,7 +330,7 @@ class Location:
 
 
 def main():
-    Process(target=WepPage.run).start()
+    # Process(target=WepPage.run).start()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
