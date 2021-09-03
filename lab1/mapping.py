@@ -316,7 +316,8 @@ class Location:
         speed / time
         :return: distance in cm
         """
-
+        if len(speed_intervals) == 0:
+            return 0
         mean_speed = np.mean(speed_intervals)
         distance =  mean_speed * time_elapsed
         print(f"Distance traveled {distance}cm")
