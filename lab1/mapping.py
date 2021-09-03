@@ -6,7 +6,7 @@ import picar_4wd as fc
 import numpy as np
 import time
 import sys
-import asyncio
+import threading
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -330,7 +330,7 @@ class Location:
 
 
 def main():
-    asyncio.create_task(WepPage.run())
+    threading.Thread(target=WepPage.run)
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
