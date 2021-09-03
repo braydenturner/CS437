@@ -2,7 +2,8 @@ import numpy as np
 from tflite_runtime.interpreter import Interpreter
 from PIL import Image
 import io
-import picamera
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 import cv2
 import re
 
@@ -16,8 +17,8 @@ class ObjectRecognition:
         self.interpreter = Interpreter("models/detect.tflite")
         self.interpreter.allocate_tensors()
         self.labels = ObjectRecognition.load_labels("models/coco_labels.txt")
-        self.camera = picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30)
-        self.capture = cv2.VideoCapture(0)
+        self.camera = PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=32)
+        self.rawCapture = PiRGBArray(self.camera, size=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT))
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
 
     def __enter__(self):
@@ -27,7 +28,6 @@ class ObjectRecognition:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.camera.close()
-        self.capture.release()
 
     @staticmethod
     def load_labels(path):
@@ -81,35 +81,27 @@ class ObjectRecognition:
         return self.labels[classId]
 
     def detect(self):
-        ret, frame = self.capture.read()
-
-        #Resize to respect the input_shape
-        inp = cv2.resize(frame, (ObjectRecognition.CAMERA_WIDTH , ObjectRecognition.CAMERA_HEIGHT))
-
-        #Convert img to RGB
-        rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
-
-        results = self.detect_objects(rgb, 0.8)
+        stream = io.BytesIO()
+        capture = self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
+        image = Image.open(stream).convert('RGB').resize(
+            (self.input_width, self.input_height), Image.ANTIALIAS)
+        results = self.detect_objects(image, 0.4)
+        stream.seek(0)
+        stream.truncate()
         return results
 
     def detect_continuous(self):
-        while True:
-            ret, frame = self.capture.read()
-
-            #Resize to respect the input_shape
-            # inp = cv2.resize(frame, (ObjectRecognition.CAMERA_WIDTH , ObjectRecognition.CAMERA_HEIGHT))
+        for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+            inp = cv2.resize(frame, (self.input_width, self.input_height))
 
             #Convert img to RGB
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 
-            results = self.detect_objects(rgb, 0.8)
+            results = self.detect_objects(rgb, 0.4)
             objects = [(self.labels[result['class_id']], result['score']) for result in results]
             print(objects)
-
+            self.rawCapture.truncate(0)
 
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
-    try:
-        obj_recognition.detect_continuous()
-    finally:
-        del obj_recognition
+    obj_recognition.detect()
