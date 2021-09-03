@@ -3,6 +3,7 @@ from tflite_runtime.interpreter import Interpreter
 from PIL import Image
 import io
 import picamera
+import cv2
 import re
 
 
@@ -16,6 +17,7 @@ class ObjectRecognition:
         self.interpreter.allocate_tensors()
         self.labels = ObjectRecognition.load_labels("models/coco_labels.txt")
         self.camera = picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30)
+        self.capture = cv2.VideoCapture(0)
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
 
     def __enter__(self):
@@ -78,28 +80,31 @@ class ObjectRecognition:
         return self.labels[classId]
 
     def detect(self):
-        stream = io.BytesIO()
-        capture = self.camera.capture(stream, format='jpeg', use_video_port=True)
-        image = Image.open(stream).convert('RGB').resize(
-            (self.input_width, self.input_height), Image.ANTIALIAS)
-        results = self.detect_objects(image, 0.4)
-        stream.seek(0)
-        stream.truncate()
+        ret, frame = self.capture.read()
+
+        #Resize to respect the input_shape
+        inp = cv2.resize(frame, (self.input_width , self.input_height ))
+
+        #Convert img to RGB
+        rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+        results = self.detect_objects(rgb, 0.8)
         return results
 
     def detect_continuous(self):
-        with picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30) as camera:
-            stream = io.BytesIO()
-            for _ in camera.capture_continuous(
-                    stream, format='jpeg', use_video_port=True):
-                image = Image.open(stream).convert('RGB').resize(
-                    (self.input_width, self.input_height), Image.ANTIALIAS)
-                results = self.detect_objects(image, 0.4)
-                objects = [(self.labels[result['class_id']], result['score']) for result in results]
-                print(objects)
-                stream.seek(0)
-                stream.truncate()
+        while True:
+            ret, frame = self.capture.read()
+
+            #Resize to respect the input_shape
+            inp = cv2.resize(frame, (self.input_width , self.input_height ))
+
+            #Convert img to RGB
+            rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+            results = self.detect_objects(rgb, 0.8)
+            objects = [(self.labels[result['class_id']], result['score']) for result in results]
+            print(objects)
 
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
-    obj_recognition.detect()
+    obj_recognition.detect_continuous()
