@@ -27,6 +27,7 @@ class ObjectRecognition:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.camera.close()
+        self.capture.release()
 
     @staticmethod
     def load_labels(path):
@@ -105,6 +106,10 @@ class ObjectRecognition:
             objects = [(self.labels[result['class_id']], result['score']) for result in results]
             print(objects)
 
+
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
-    obj_recognition.detect_continuous()
+    try:
+        obj_recognition.detect_continuous()
+    finally:
+        del obj_recognition
