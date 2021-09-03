@@ -263,7 +263,7 @@ class Location:
     def monitor_location():
         speeds = []
         start_time = time.perf_counter()
-        while Ultrasonic.get_distance() > 10:
+        while Ultrasonic.avoidance_scan() > 10:
             speeds.append(Location.speed())
         fc.stop()
         elapsed_time = time.perf_counter() - start_time
@@ -335,6 +335,7 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
+    fc.start_speed_thread()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
