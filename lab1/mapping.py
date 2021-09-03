@@ -330,7 +330,7 @@ class Location:
 
 
 def main():
-    asyncio.run(WepPage.run())
+    asyncio.create_task(WepPage.run())
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
