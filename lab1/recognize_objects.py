@@ -104,4 +104,7 @@ class ObjectRecognition:
 
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
-    obj_recognition.detect()
+    try:
+        obj_recognition.detect_continuous()
+    finally:
+        del obj_recognition
