@@ -41,7 +41,7 @@ def scan() -> float:
     :return: distance in cm
     """
     global current_angle, step
-    angle_range = 135
+    angle_range = 180
     max_angle = angle_range / 2
     min_angle = max_angle * -1
 
@@ -82,7 +82,7 @@ def move_backward(power: int = 15):
     fc.backward(power)
 
 
-def move_forward(power: int = 20):
+def move_forward(power: int = 15):
     print("Onward!")
     fc.forward(power)
 
@@ -92,10 +92,10 @@ def main():
     move_forward()
     while True:
         distance = scan()
-        if distance < 12:
+        if distance < 15:
             fc.stop()
             move_backward()
-            time.sleep(.75)
+            time.sleep(75)
             fc.stop()
             turn_random_direction()
             fc.stop()
