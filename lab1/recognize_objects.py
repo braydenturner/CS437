@@ -18,7 +18,12 @@ class ObjectRecognition:
         self.camera = picamera.PiCamera(resolution=(ObjectRecognition.CAMERA_WIDTH, ObjectRecognition.CAMERA_HEIGHT), framerate=30)
         _, self.input_height, self.input_width, _ = self.interpreter.get_input_details()[0]['shape']
 
-    def __del__(self):
+    def __enter__(self):
+        return self
+
+    # ...
+
+    def __exit__(self, exc_type, exc_value, traceback):
         self.camera.close()
 
     @staticmethod
