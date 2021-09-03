@@ -54,7 +54,7 @@ def scan() -> float:
         step *= -1
 
     fc.servo.set_angle(current_angle)
-    time.sleep(.05)
+    time.sleep(.04)
     distance = get_distance()
     return distance
 
@@ -95,7 +95,7 @@ def main():
         if distance < 15:
             fc.stop()
             move_backward()
-            time.sleep(75)
+            time.sleep(.75)
             fc.stop()
             turn_random_direction()
             fc.stop()
