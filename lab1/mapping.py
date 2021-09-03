@@ -35,7 +35,7 @@ class Orientation(Enum):
 
 
 # [y, x]
-side_length = 500
+side_length = 200
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
@@ -208,7 +208,7 @@ class Ultrasonic:
 
         fc.servo.set_angle(current_servo_angle)
         time.sleep(.1)
-        distance = Ultrasonic.get_distance()
+        distance = fc.us.get_distance()
         return distance
 
 
@@ -262,10 +262,16 @@ class Location:
     @staticmethod
     def monitor_location():
         speeds = []
+
+        fc.start_speed_thread()
         start_time = time.perf_counter()
         while Ultrasonic.avoidance_scan() > 10:
             speeds.append(Location.speed())
+
         fc.stop()
+        fc.left_rear_speed.deinit()
+        fc.right_rear_speed.deinit()
+
         elapsed_time = time.perf_counter() - start_time
         distance = Location.distance_traveled(elapsed_time, speeds)
 
@@ -336,7 +342,6 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
-    fc.start_speed_thread()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
