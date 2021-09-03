@@ -66,7 +66,7 @@ class Ultrasonic:
             last_point = point
 
     @staticmethod
-    def scan() -> [float]:
+    def mapping_scan() -> [float]:
         """
         Scans in front of the car
         :return: list of distance and angles (cm, degrees)
@@ -152,6 +152,30 @@ class Ultrasonic:
 
         return points_to_fill_in
 
+    @staticmethod
+    def avoidance_scan() -> float:
+        """
+        Scans in front of the car and returns the distance
+        :return: distance in cm
+        """
+        global current_servo_angle, step
+        angle_range = 135
+        max_angle = angle_range / 2
+        min_angle = max_angle * -1
+
+        current_servo_angle += step
+        if current_servo_angle > max_angle:
+            current_angle = max_angle
+            step *= -1
+        elif current_servo_angle < min_angle:
+            current_angle = min_angle
+            step *= -1
+
+        fc.servo.set_angle(current_servo_angle)
+        time.sleep(.1)
+        distance = Ultrasonic.get_distance()
+        return distance
+
 
 class Location:
     """
@@ -159,19 +183,24 @@ class Location:
     """
 
     @staticmethod
-    def update_location():
+    def update_location(new_angle: int, new_location: Point):
         """
 
         :return:
         """
         global current_car_angle, curr_position
+        current_car_angle, curr_position = new_angle, new_location
 
     @staticmethod
-    def distance_traveled() -> int:
+    def distance_traveled(time_elapsed, speed_intervals) -> int:
         """
         speed / time
-        :return:
+        :return: distance in cm
         """
+
+        mean_speed = np.mean(speed_intervals)
+
+        return mean_speed * time_elapsed
 
     @staticmethod
     def speed() -> float:
@@ -234,7 +263,18 @@ def main():
         # plt.show()
 
         time.sleep(5)
-        # Move in direction until object is hit
+
+        # Move in direction until object is hit, measuring distance
+        speeds = []
+        Movement.move_forward()
+        start_time = time.perf_counter()
+        while Ultrasonic.get_distance() > 10:
+            speeds.append(Location.speed())
+        fc.stop()
+        elapsed_time = time.perf_counter() - start_time
+        distance = Location.distance_traveled(elapsed_time, speeds)
+
+        Location.update_location(current_car_angle, distance)
 
         # Turn
 
