@@ -83,7 +83,7 @@ class ObjectRecognition:
         ret, frame = self.capture.read()
 
         #Resize to respect the input_shape
-        inp = cv2.resize(frame, (self.input_width , self.input_height ))
+        inp = cv2.resize(frame, (ObjectRecognition.CAMERA_WIDTH , ObjectRecognition.CAMERA_HEIGHT))
 
         #Convert img to RGB
         rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
@@ -96,7 +96,7 @@ class ObjectRecognition:
             ret, frame = self.capture.read()
 
             #Resize to respect the input_shape
-            inp = cv2.resize(frame, (self.input_width , self.input_height ))
+            inp = cv2.resize(frame, (ObjectRecognition.CAMERA_WIDTH , ObjectRecognition.CAMERA_HEIGHT))
 
             #Convert img to RGB
             rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
