@@ -92,7 +92,7 @@ def main():
     move_forward()
     while True:
         distance = scan()
-        if distance < 20:
+        if distance < 12:
             fc.stop()
             move_backward()
             time.sleep(.75)
