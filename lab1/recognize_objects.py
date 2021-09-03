@@ -74,6 +74,8 @@ class ObjectRecognition:
                 results.append(result)
         return results
 
+    def label_from_classId(self, classId):
+
     def detect(self):
         stream = io.BytesIO()
         capture = self.camera.capture(stream, format='jpeg', use_video_port=True)
