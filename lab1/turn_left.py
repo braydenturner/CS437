@@ -4,3 +4,4 @@ import time
 def turn_left(power, seconds):
     fc.turn_left(power)
     time.sleep(seconds)
+    fc.stop()
