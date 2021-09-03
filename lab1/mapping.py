@@ -6,7 +6,7 @@ import picar_4wd as fc
 import numpy as np
 import time
 import sys
-import threading
+from multiprocessing import Process
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -339,7 +339,7 @@ def main():
         plt.savefig("/home/pi/map.png")
         # plt.show()
 
-        x = threading.Thread(target=WepPage.run)
+        x = Process(target=WepPage.run)
         x.start()
         x.join(5)
         # Move in direction until object is hit, measuring distance
