@@ -337,7 +337,7 @@ def main():
 
         # Save image
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("/home/pi/map.png")
+        plt.savefig("/home/pi/Desktop/map.png")
         # plt.show()
 
         time.sleep(5)
