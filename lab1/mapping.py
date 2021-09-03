@@ -330,7 +330,6 @@ class Location:
 
 
 def main():
-    threading.Thread(target=WepPage.run).start()
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
@@ -351,6 +350,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        threading.Thread(target=main).start()
+        WepPage.run()
     finally:
         fc.stop()
