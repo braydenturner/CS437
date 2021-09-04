@@ -344,6 +344,7 @@ def main():
         print(new_maze)
         last_elm = end
         print(last_elm)
+        print(len(came_from))
         while last_elm is not None:
             last_elm = came_from[last_elm]
             print(last_elm)
