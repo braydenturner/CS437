@@ -273,7 +273,7 @@ class Movement:
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
         moves = []
         for next_point in path:
-            if next_point is None and last_point is None:
+            if next_point is None or last_point is None:
                 last_point = next_point
                 continue
             # Still forward
