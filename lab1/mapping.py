@@ -278,7 +278,7 @@ class Movement:
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
         moves = []
         while len(path) > 0:
-            next_point = path.pop
+            next_point = path.pop()
             if curr_orientation == Orientation.North or curr_orientation == Orientation.South:
                 # Still forward
                 if last_point.x == next_point.x:
