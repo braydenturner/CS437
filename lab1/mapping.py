@@ -366,9 +366,8 @@ def main():
         plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end
         print(last_elm)
-        while last_elm is not None:
-            last_elm = came_from[last_elm]
-            print(last_elm)
+        for x, y in came_from.items():
+            print(f"{y}->{x}")
         # Save image
         # plt.show()
 
