@@ -275,7 +275,6 @@ class Movement:
         moves = []
         while len(path) > 0:
             next_point = path.pop()
-            print(f"Next point {next_point}")
             if last_point is None:
                 last_point = next_point
                 continue
@@ -286,11 +285,13 @@ class Movement:
                     next_point.x > last_point.x and curr_orientation == Orientation.South or \
                     next_point.y < last_point.y and curr_orientation == Orientation.West or \
                     next_point.y > last_point.y and curr_orientation == Orientation.East:
+                print(f"Move forward for point {forward.amount}, then turn left")
                 moves.append(forward)
                 moves.append(Movement.Move(Movement.Move.Type.Left))
                 Location.update_orientation(Movement.Direction.Left)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
             else:
+                print(f"Move forward for point {forward.amount}, then turn right")
                 moves.append(forward)
                 moves.append(Movement.Move(Movement.Move.Type.Right))
                 Location.update_orientation(Movement.Direction.Right)
@@ -315,7 +316,7 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
-            if abs(distance - stop_at) < 1:
+            if abs(distance - stop_at) < 2:
                 break
         fc.stop()
         fc.left_rear_speed.deinit()
