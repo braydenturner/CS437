@@ -332,7 +332,7 @@ def main():
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
         print(world_map)
-        plt.imshow(np.rot90(np.rot90(world_map)), interpolation='nearest')
+        # plt.imshow(np.rot90(np.rot90(world_map)), interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
 
         new_maze = np.full(np.shape(world_map), -1)
