@@ -126,7 +126,7 @@ class AStarSearch:
 
             # Every time any node is referred from yet_to_visit list, counter of limit operation incremented
             outer_iterations += 1
-            if outer_iterations % 1000000:
+            if outer_iterations % 1000000 == 0:
                 print(outer_iterations)
 
             # Get the current node
