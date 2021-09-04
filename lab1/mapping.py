@@ -434,8 +434,11 @@ def main():
             last_elm = came_from[last_elm]
             path_forward.append(last_elm)
 
+        # Path is reversed
+        path_forward.reverse()
+
         #cutoff part of path to rescan
-        cutoff = 50
+        cutoff = 70
         if len(path_forward) > cutoff:
             path_forward = path_forward[:cutoff]
         else:
@@ -448,11 +451,10 @@ def main():
         rgba = cmap(norm(world_map))
 
         print("Saving map to png")
-        path_forward.reverse()
         for point in path_forward:
             if point is not None:
                 # Set path pixels to blue
-                rgba[point.y][point.x] = 1, 1, 1, 1
+                rgba[point.y][point.x] = 0, 0, 1, 1
 
         # Set start and end pixel
         rgba[end.y][end.x] = 1, 0, 0, 1
@@ -476,7 +478,6 @@ def main():
                 Movement.turn_right()
 
         i += 1
-        done = True
 
 if __name__ == "__main__":
     try:
