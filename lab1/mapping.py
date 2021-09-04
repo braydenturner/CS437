@@ -198,7 +198,7 @@ class Ultrasonic:
         :return:
         '''
         global world_map
-        for x in range(4):
+        for x in range(6):
             temp_map = np.copy(world_map)
             for row_i, row in enumerate(world_map):
                 for col_i, col in enumerate(row):
@@ -414,7 +414,7 @@ def main():
         new_maze = np.full(np.shape(world_map), -1)
 
         # start = Point(200, 0)
-        end = Point(200, 120)
+        end = Point(200, 150)
 
         print("Searching for best possible path")
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
