@@ -187,7 +187,7 @@ class Ultrasonic:
             step *= -1
 
         fc.servo.set_angle(current_servo_angle)
-        time.sleep(.1)
+        time.sleep(.2)
         distance = fc.us.get_distance()
         return distance
 
