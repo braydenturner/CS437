@@ -241,7 +241,7 @@ class Movement:
             self.type = type_of_move
             self.amount = amount
 
-    turn_time = .60
+    turn_time = .55
 
     @staticmethod
     def turn_left(power: int = 50):
