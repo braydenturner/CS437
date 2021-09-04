@@ -376,7 +376,7 @@ def main():
         for point in path_forward:
             if point is not None:
                 rgba[point.y][point.x] = 1, 0, 0, 1
-        plt.imshow(new_maze, interpolation='nearest')
+        plt.imshow(rgba, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         # Save image
         # plt.show()
