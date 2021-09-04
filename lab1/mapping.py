@@ -198,6 +198,7 @@ class Ultrasonic:
         :return:
         '''
         global world_map
+        padded_map = np.copy(world_map)
         for x in range(6):
             temp_map = np.copy(world_map)
             for row_i, row in enumerate(world_map):
@@ -206,7 +207,9 @@ class Ultrasonic:
                         neighbors = AStar.neighbors(temp_map, Point(col_i, row_i))
                         for neighbor in neighbors:
                             temp_map[neighbor.y][neighbor.x] = 1
-            world_map = temp_map
+            padded_map = temp_map
+
+        return padded_map
 
 class Movement:
     """
@@ -417,14 +420,14 @@ def main():
         Ultrasonic.find_objects()
 
         print("Padding world map for clearance")
-        Ultrasonic.pad_world_map()
+        padded_map = Ultrasonic.pad_world_map()
 
         # ================================
         # Find best possible path
-        new_map = np.full(np.shape(world_map), -1)
         print("Searching for best possible path")
-        came_from, cost_so_far = AStar.search(world_map, curr_position, end)
+        came_from, cost_so_far = AStar.search(padded_map, curr_position, end)
 
+        new_map = np.full(np.shape(padded_map), -1)
         for point, cost in cost_so_far.items():
             new_map[point.y][point.x] = cost
 
@@ -438,17 +441,18 @@ def main():
         path_forward.reverse()
 
         #cutoff part of path to rescan
-        cutoff = 70
+        cutoff = 100
         if len(path_forward) > cutoff:
-            path_forward = path_forward[:cutoff]
+            path_forward = path_forward[0:cutoff]
         else:
             # Last leg of the journey
+            print("To the finish")
             done = True
         # ================================
         # Save photo of path
         cmap = plt.cm.gray
-        norm = plt.Normalize(world_map.min(), world_map.max())
-        rgba = cmap(norm(world_map))
+        norm = plt.Normalize(padded_map.min(), padded_map.max())
+        rgba = cmap(norm(padded_map))
 
         print("Saving map to png")
         for point in path_forward:
