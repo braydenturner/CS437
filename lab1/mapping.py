@@ -270,7 +270,7 @@ class Movement:
         global curr_orientation
 
         last_point = None
-        forward = Movement.Move(Movement.Move.Type.Forward, 0)
+        forward = None
         moves = []
         for next_point in path:
             if next_point is None or last_point is None:
@@ -279,19 +279,26 @@ class Movement:
             # Still forward
             if curr_orientation in [Orientation.North, Orientation.South] and last_point.x == next_point.x \
                     or curr_orientation in [Orientation.East, Orientation.West] and last_point.y == next_point.y:
+                if forward is None:
+                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
                 forward.amount += 1
             elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
                     next_point.x > last_point.x and curr_orientation == Orientation.South or \
                     next_point.y < last_point.y and curr_orientation == Orientation.West or \
                     next_point.y > last_point.y and curr_orientation == Orientation.East:
-                print(f"Move forward for {forward.amount}, then turn left")
-                moves.append(forward)
+
+                if forward is not None:
+                    print(f"Move forward for {forward.amount}")
+                    moves.append(forward)
+                print("Turn left")
                 moves.append(Movement.Move(Movement.Move.Type.Left))
                 Location.update_orientation(Movement.Direction.Left)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
             else:
-                print(f"Move forward for {forward.amount}, then turn right")
-                moves.append(forward)
+                if forward is not None:
+                    print(f"Move forward for {forward.amount}")
+                    moves.append(forward)
+                print("Turn right")
                 moves.append(Movement.Move(Movement.Move.Type.Right))
                 Location.update_orientation(Movement.Direction.Right)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
