@@ -285,8 +285,6 @@ class Location:
     @staticmethod
     def monitor_location(stop_at: int):
         speeds = []
-
-        fc.start_speed_thread()
         start_time = time.perf_counter()
         while True:
             speeds.append(Location.speed())
@@ -366,6 +364,7 @@ class Location:
 def main():
     # Process(target=WepPage.run).start()
     x = 0
+    fc.start_speed_thread()
     while x < 4:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
