@@ -314,6 +314,7 @@ class Location:
         speeds = []
         start_time = time.perf_counter()
         while True:
+            Movement.move_forward()
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
