@@ -2,11 +2,12 @@ from enum import Enum
 from point import Point
 from matplotlib import pyplot as plt
 from webpage import WepPage
+from typing import *
+from a_star_search import AStar
 import picar_4wd as fc
 import numpy as np
 import time
 import sys
-from a_star_search import AStar
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -234,6 +235,17 @@ class Movement:
             else:
                 Movement.turn_right()
 
+    class Move:
+        class Type(Enum):
+            Forward = 0
+            Left = 1
+            Right = 2
+            Backward = 3
+
+        def __init__(self, type_of_move: Type, amount: int):
+            self.type = type_of_move
+            self.amount = amount
+
     @staticmethod
     def turn_left(power: int = 50):
         fc.turn_left(power)
@@ -255,6 +267,15 @@ class Movement:
         time.sleep(.55)
         Location.monitor_location()
 
+    @staticmethod
+    def compute_moves(path: [Point]) -> [Move]:
+        global curr_orientation
+
+        last_point = path.pop()
+        distance_forward = 0
+        while len(path) > 0:
+            next_point = path.pop
+
 
 class Location:
     """
@@ -262,20 +283,20 @@ class Location:
     """
 
     @staticmethod
-    def monitor_location():
+    def monitor_location(stop_at: int):
         speeds = []
 
         fc.start_speed_thread()
         start_time = time.perf_counter()
-        while Ultrasonic.avoidance_scan() > 10:
+        while True:
             speeds.append(Location.speed())
-
+            elapsed_time = time.perf_counter() - start_time
+            distance = Location.distance_traveled(elapsed_time, speeds)
+            if abs(distance - stop_at) < 2:
+                break
         fc.stop()
         fc.left_rear_speed.deinit()
         fc.right_rear_speed.deinit()
-
-        elapsed_time = time.perf_counter() - start_time
-        distance = Location.distance_traveled(elapsed_time, speeds)
 
         Location.update_location(distance)
 
@@ -344,7 +365,7 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
-    while True:
+    # while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
         plt.imshow(world_map, interpolation='nearest')
@@ -356,7 +377,7 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        end = Point(30, side_length - 1)
+        end = Point(50, side_length - 1)
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
@@ -378,13 +399,10 @@ def main():
                 rgba[point.y][point.x] = 1, 0, 0, 1
         plt.imshow(rgba, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
-        # Save image
-        # plt.show()
-
 
         # Move in direction until object is hit, measuring distance
-        # Movement.move_forward()
-
+        Movement.move_forward()
+        Location.monitor_location(stop_at=Point.y)
 
         # Turn
 
