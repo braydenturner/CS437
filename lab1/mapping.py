@@ -305,6 +305,7 @@ class Movement:
 
             last_point = next_point
 
+        print(f"Move forward for {forward.amount}")
         moves.append(forward)
 
         return moves
