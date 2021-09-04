@@ -356,13 +356,12 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        end =  Point(30, side_length)
+        end = Point(30, side_length)
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
             new_maze[point.y][point.x] = cost
 
-        new_maze *= 5
         plt.imshow(new_maze, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end
