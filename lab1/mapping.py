@@ -18,9 +18,8 @@ class Orientation(Enum):
     South = 2
     West = 3
 
-
 # [y, x]
-side_length = 100
+side_length = 400
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
@@ -242,7 +241,7 @@ class Movement:
             Right = 2
             Backward = 3
 
-        def __init__(self, type_of_move: Type, amount: int):
+        def __init__(self, type_of_move: Type, amount: int = None):
             self.type = type_of_move
             self.amount = amount
 
@@ -276,8 +275,45 @@ class Movement:
 
         last_point = path.pop()
         distance_forward = 0
+        forward = Movement.Move(Movement.Move.Type.Forward, 0)
+        moves = []
         while len(path) > 0:
             next_point = path.pop
+            if curr_orientation == Orientation.North or curr_orientation == Orientation.South:
+                # Still forward
+                if last_point.x == next_point.x:
+                    forward.amount+= 1
+                elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
+                        next_point.x > last_point.x and curr_orientation == Orientation.South:
+                    moves.append(forward)
+                    moves.append(Movement.Move(Movement.Move.Type.Left))
+                    Location.update_orientation(Movement.Direction.Left)
+                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+                else:
+                    moves.append(forward)
+                    moves.append(Movement.Move(Movement.Move.Type.Right))
+                    Location.update_orientation(Movement.Direction.Right)
+                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+            else:
+                # Still forward
+                if last_point.y == next_point.y:
+                    forward.amount += 1
+                elif next_point.y < last_point.y and curr_orientation == Orientation.West or \
+                        next_point.y > last_point.y and curr_orientation == Orientation.East:
+                    moves.append(forward)
+                    moves.append(Movement.Move(Movement.Move.Type.Left))
+                    Location.update_orientation(Movement.Direction.Left)
+                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+                else:
+                    moves.append(forward)
+                    moves.append(Movement.Move(Movement.Move.Type.Right))
+                    Location.update_orientation(Movement.Direction.Right)
+                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+
+            last_point = next_point
+
+        return moves
+
 
 
 class Location:
@@ -366,9 +402,9 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
-    x = 0
+    done = False
     fc.start_speed_thread()
-    while x < 4:
+    while not done:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
         plt.imshow(world_map, interpolation='nearest')
@@ -380,7 +416,8 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        end = Point(50, side_length - 1)
+        # start = Point(50, 0)
+        end = Point(50, 200)
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
@@ -403,16 +440,18 @@ def main():
         plt.imshow(rgba, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
 
-        # Move in direction until object is hit, measuring distance
-        Movement.move_forward()
-        Location.monitor_location(stop_at=end.y)
-        Movement.turn_right()
+        # Move
+        moves = Movement.compute_moves(path_forward)
+        for move in moves:
+            if move.type == Movement.Move.Type.Forward:
+                Movement.move_forward()
+                Location.monitor_location(stop_at=move.amount)
+            elif move.type == Movement.Move.Type.Left:
+                Movement.turn_left()
+            else:
+                Movement.turn_right()
 
-        x+=1
-
-        # Turn
-
-
+        done = True
 
 if __name__ == "__main__":
     try:
