@@ -76,7 +76,7 @@ class Ultrasonic:
             time.sleep(0.1)
             distance = Ultrasonic.get_distance()
             measurements.append((distance, angle))
-            print(f"Measurement ({distance}, {angle})")
+            # print(f"Measurement ({distance}, {angle})")
 
         return measurements
 
@@ -87,7 +87,7 @@ class Ultrasonic:
         if point.x < side_length and point.y < side_length:
             # Swapped in matrix
             world_map[point.y][point.x] = 1
-            print(f"Marking point {point}")
+            # print(f"Marking point {point}")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -99,7 +99,7 @@ class Ultrasonic:
         """
 
         # filter out sensor limit readings
-        if np.abs(100 - dist) <= 50 or dist < 0:
+        if np.abs(100 - dist) <= 30 or dist < 0:
             # print(f"Filtering out {dist}")
             return None
 
