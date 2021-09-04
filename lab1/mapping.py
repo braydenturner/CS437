@@ -198,7 +198,7 @@ class Ultrasonic:
         :return:
         '''
         global world_map
-        for x in range(5):
+        for x in range(4):
             temp_map = np.copy(world_map)
             for row_i, row in enumerate(world_map):
                 for col_i, col in enumerate(row):
@@ -317,7 +317,7 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
-            print(f"Distance {distance}cm")
+            # print(f"Distance {distance}cm")
             if abs(distance - stop_at) < 2:
                 break
         fc.stop()
