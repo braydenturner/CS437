@@ -365,10 +365,14 @@ def main():
         plt.imshow(new_maze, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end
-        print(last_elm)
+        path_forward = [last_elm]
         while last_elm is not None:
             last_elm = came_from[last_elm]
-            print(last_elm)
+            path_forward.append(last_elm)
+
+        path_forward.reverse()
+
+        print(path_forward)
         # Save image
         # plt.show()
 
