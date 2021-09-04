@@ -52,8 +52,6 @@ class Ultrasonic:
                     points_in_between = Ultrasonic.interpolate_points(point, last_point)
                     for pnt in points_in_between:
                         Ultrasonic.mark_point(pnt)
-            else:
-                print("Missed")
 
             # Set this point as last checked point for interpolation
             last_point = point
@@ -74,7 +72,6 @@ class Ultrasonic:
 
         # Sweep from min to max angle along step
         for angle in range(min_angle, max_angle, step):
-            print(f"Taking measurement at {angle}")
             fc.servo.set_angle(angle)
             time.sleep(0.2)
             distance = Ultrasonic.get_distance()
@@ -87,11 +84,10 @@ class Ultrasonic:
         global side_length
 
         if point.x < side_length and point.y < side_length:
-            print(f"Marking point ({point})")
             # Swapped in matrix
             world_map[point.y][point.x] = 1
         else:
-            print(f"Point({point}) out of bounds")
+            # print(f"Point({point}) out of bounds")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -104,7 +100,7 @@ class Ultrasonic:
 
         # filter out sensor limit readings
         if np.abs(100 - dist) <= 50 or dist < 0:
-            print(f"Filtering out {dist}")
+            # print(f"Filtering out {dist}")
             return None
 
 
@@ -146,18 +142,19 @@ class Ultrasonic:
         :return: distance in cm
         """
         distance: int = fc.us.get_distance()  # cm
+        # print(f"Distance: {distance}cm")
 
         return distance
 
     @staticmethod
     def interpolate_points(p1: Point, p2: Point) -> [Point]:
-        print(f'Interpolating {p1} and {p2}')
+        # print(f'Interpolating {p1} and {p2}')
         if p2.x - p1.x == 0:
-            print(f'Infinite slope')
+            # print(f'Infinite slope')
             return []
         slope = (p2.y - p1.y) / (p2.x - p1.x)
         y_intercept = p1.y - slope * p1.x
-        print (f"Slope {slope} and y-intercept {y_intercept}")
+        # print (f"Slope {slope} and y-intercept {y_intercept}")
         points_to_fill_in = []
         sorted_x = sorted([p1.x, p2.x])
 
@@ -165,7 +162,7 @@ class Ultrasonic:
         for x in range(sorted_x[0], sorted_x[1]):
             y = slope * x + y_intercept
             new_pnt = Point(x, y)
-            print(f"New Point {new_pnt}")
+            # print(f"New Point {new_pnt}")
             points_to_fill_in.append(new_pnt)
 
         return points_to_fill_in
@@ -407,18 +404,18 @@ def main():
     fc.start_speed_thread()
     while not done:
         # Scan 180 FOV, Update map, interpolate points in between
+        print("Finding objects")
         Ultrasonic.find_objects()
-        plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map_no_padding.png")
 
+        print("Padding world map for clearance")
         Ultrasonic.pad_world_map()
-        plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map_padding.png")
 
         new_maze = np.full(np.shape(world_map), -1)
 
         # start = Point(50, 0)
         end = Point(50, 200)
+
+        print("Searching for best possible path")
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
@@ -438,12 +435,16 @@ def main():
         for point in path_forward:
             if point is not None:
                 rgba[point.y][point.x] = 1, 0, 0, 1
+
+        print("Saving map to png")
         plt.imshow(rgba, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
 
         # Move
+        print("Computing moves to make")
         moves = Movement.compute_moves(path_forward[1:])
         for move in moves:
+            print(f"Make move {move.type} for {move.amount}")
             if move.type == Movement.Move.Type.Forward:
                 Movement.move_forward()
                 Location.monitor_location(stop_at=move.amount)
