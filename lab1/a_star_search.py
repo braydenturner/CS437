@@ -51,7 +51,17 @@ class AStar:
                 break
 
             for next_neighbor in AStar.neighbors(map, current):
-                new_cost = cost_so_far[current] + 1
+                parent_of_current = came_from.get(current, None)
+                # Favor straight lines
+                if parent_of_current:
+                    if next_neighbor.x == current.x == parent_of_current.x or \
+                            next_neighbor.y == current.y == parent_of_current.y:
+                        new_cost = cost_so_far[current] + 1
+                    else:
+                        new_cost = cost_so_far[current] + 5
+                else:
+                    new_cost = cost_so_far[current] + 1
+
                 if next_neighbor not in cost_so_far or new_cost < cost_so_far[next_neighbor]:
                     cost_so_far[next_neighbor] = new_cost
                     priority = new_cost + AStar.heuristic(next_neighbor, goal)
