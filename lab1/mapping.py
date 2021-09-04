@@ -337,7 +337,7 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        end =  Point(60, side_length)
+        end =  Point(30, side_length)
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
