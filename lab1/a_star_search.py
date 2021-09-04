@@ -1,10 +1,29 @@
 import numpy as np
-from point import Point
+
+class Point:
+    """
+    Used to denote x, y coordinated
+    """
+    col: int
+    row: int
+
+    def __init__(self, col: float, row: float):
+        self.col = int(col)
+        self.row = int(row)
+
+    def __add__(self, other):
+        return Point(self.col + other.col,  self.row + other.row)
+
+    def __str__(self):
+        return f"({self.col},{self.row})"
+
 
 class AStarSearch:
-
     class Node:
         """
+            A node class for A* Pathfinding
+            parent is parent of the current Node
+            position is current position of the Node in the maze
             g is cost from start to current Node
             h is heuristic based estimated cost for current Node to end Node
             f is total cost of present node i.e. :  f = g + h
@@ -20,13 +39,12 @@ class AStarSearch:
         def __eq__(self, other):
             return self.position == other.position
 
-    #This function return the path of the search
     @staticmethod
-    def return_path(current_node,maze):
+    #This function return the path of the search
+    def return_path(current_node, maze):
         path = []
-        no_rows, no_columns = np.shape(maze)
         # here we create the initialized result maze with -1 in every position
-        result = [[-1 for i in range(no_columns)] for j in range(no_rows)]
+        result = np.full(np.shape(maze), -1)
         current = current_node
         while current is not None:
             path.append(current.position)
@@ -34,12 +52,11 @@ class AStarSearch:
         # Return reversed path as we need to show from start to end path
         path = path[::-1]
         start_value = 0
-        # we update the path of start to end found by A-star search with every step incremented by 1
+        # we update the path of start to end found by A-star serch with every step incremented by 1
         for i in range(len(path)):
             result[path[i][0]][path[i][1]] = start_value
             start_value += 1
-        return result
-
+        return result, path
 
     @staticmethod
     def search(maze, cost, start, end):
@@ -76,10 +93,10 @@ class AStarSearch:
         # what squares do we search . serarch movement is left-right-top-bottom
         #(4 movements) from every positon
 
-        move  =  [Point(-1, 0), # go up
-                  Point(0, -1), # go left
-                  Point(1, 0), # go down
-                  Point(0, 1)] # go right
+        move  =  [[-1, 0 ], # go up
+                  [ 0, -1], # go left
+                  [ 1, 0 ], # go down
+                  [ 0, 1 ]] # go right
 
 
         """
@@ -138,17 +155,17 @@ class AStarSearch:
             for new_position in move:
 
                 # Get node position
-                node_position = (current_node.position.x + new_position.x, current_node.position.y + new_position.y)
+                node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
                 # Make sure within range (check if within maze boundary)
-                if (node_position.x > (no_rows - 1) or
-                        node_position.x < 0 or
-                        node_position.y > (no_columns -1) or
-                        node_position.y < 0):
+                if (node_position[0] > (no_rows - 1) or
+                        node_position[0] < 0 or
+                        node_position[1] > (no_columns -1) or
+                        node_position[1] < 0):
                     continue
 
                 # Make sure walkable terrain
-                if maze[node_position.x][node_position.y] != 0:
+                if maze[node_position[0]][node_position[1]] != 0:
                     continue
 
                 # Create new node
@@ -167,8 +184,8 @@ class AStarSearch:
                 # Create the f, g, and h values
                 child.g = current_node.g + cost
                 ## Heuristic costs calculated here, this is using eucledian distance
-                child.h = (((child.position.x - end_node.position.x) ** 2) +
-                           ((child.position.y - end_node.position.y) ** 2))
+                child.h = (((child.position[0] - end_node.position[0]) ** 2) +
+                           ((child.position[1] - end_node.position[1]) ** 2))
 
                 child.f = child.g + child.h
 
@@ -178,18 +195,3 @@ class AStarSearch:
 
                 # Add the child to the yet_to_visit list
                 yet_to_visit_list.append(child)
-
-if __name__ == '__main__':
-
-    maze = [[0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 1, 0, 0],
-            [0, 1, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0]]
-
-    start = Point(0, 0) # starting position
-    end = Point(4, 5) # ending position
-    cost = 1 # cost per movement
-
-    path = AStarSearch.search(maze,cost, start, end)
-    print(path)

@@ -6,7 +6,7 @@ import picar_4wd as fc
 import numpy as np
 import time
 import sys
-from multiprocessing import Process
+from a_star_search import AStarSearch
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -331,7 +331,10 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
+        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [200, curr_position.x])
 
+        print(search)
+        print(path)
         # Save image
         plt.imshow(world_map, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
@@ -339,7 +342,7 @@ def main():
 
 
         # Move in direction until object is hit, measuring distance
-        Movement.move_forward()
+        # Movement.move_forward()
 
 
         # Turn
