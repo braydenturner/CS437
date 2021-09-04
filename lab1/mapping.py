@@ -23,7 +23,7 @@ side_length = 400
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
-curr_position = Point(200, 0)
+curr_position = None
 curr_orientation = Orientation.North
 
 
@@ -401,26 +401,32 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
+    global curr_position
+    # Starting point
+    curr_position = Point(200, 0)
+
     done = False
     fc.start_speed_thread()
+    i = 0
     while not done:
-        # Scan 180 FOV, Update map, interpolate points in between
+        end = Point(200, 150)
+
+        # ================================
+        # Scan 180 FOV, Update map, pad the objects
         print("Finding objects")
         Ultrasonic.find_objects()
 
         print("Padding world map for clearance")
         Ultrasonic.pad_world_map()
 
-        new_maze = np.full(np.shape(world_map), -1)
-
-        # start = Point(200, 0)
-        end = Point(200, 150)
-
+        # ================================
+        # Find best possible path
+        new_map = np.full(np.shape(world_map), -1)
         print("Searching for best possible path")
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
-            new_maze[point.y][point.x] = cost
+            new_map[point.y][point.x] = cost
 
         last_elm = end
         path_forward = [last_elm]
@@ -428,21 +434,35 @@ def main():
             last_elm = came_from[last_elm]
             path_forward.append(last_elm)
 
+        #cutoff part of path to rescan
+        cutoff = 50
+        if len(path_forward) > cutoff:
+            path_forward = path_forward[:cutoff]
+        else:
+            # Last leg of the journey
+            done = True
+        # ================================
+        # Save photo of path
         cmap = plt.cm.gray
         norm = plt.Normalize(world_map.min(), world_map.max())
         rgba = cmap(norm(world_map))
 
+        print("Saving map to png")
         path_forward.reverse()
         for point in path_forward:
-            print(f"{point}")
             if point is not None:
-                rgba[point.y][point.x] = 1, 0, 0, 1
+                # Set path pixels to blue
+                rgba[point.y][point.x] = 1, 1, 1, 1
 
-        print("Saving map to png")
+        # Set start and end pixel
+        rgba[end.y][end.x] = 1, 0, 0, 1
+        rgba[curr_position.y][curr_position.x] = 0, 1, 0, 1
+
         plt.imshow(rgba, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map_search.png")
+        plt.savefig(f"/home/pi/Desktop/map_search_{i}.png")
 
-        # Move
+        # ================================
+        # Compute moves and move
         print("Computing moves to make")
         moves = Movement.compute_moves(path_forward)
         for move in moves:
@@ -455,6 +475,7 @@ def main():
             else:
                 Movement.turn_right()
 
+        i += 1
         done = True
 
 if __name__ == "__main__":
