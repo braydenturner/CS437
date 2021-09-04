@@ -331,11 +331,11 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
-        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [side_length, curr_position.x])
 
         plt.imshow(np.rot90(np.rot90(world_map)), interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
 
+        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [side_length, curr_position.x])
         print(search)
         print(path)
         # Save image

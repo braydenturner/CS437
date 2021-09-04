@@ -89,6 +89,7 @@ class AStarSearch:
         # execution after some reasonable number of steps
         outer_iterations = 0
         max_iterations = (len(maze) // 2) ** 10
+        print(f"Iterations {max_iterations}")
 
         # what squares do we search . serarch movement is left-right-top-bottom
         #(4 movements) from every positon
