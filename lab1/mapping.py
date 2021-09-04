@@ -6,7 +6,7 @@ import picar_4wd as fc
 import numpy as np
 import time
 import sys
-from a_star_search import AStarSearch
+from a_star_search import AStar
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -19,7 +19,7 @@ class Orientation(Enum):
 
 
 # [y, x]
-side_length = 50
+side_length = 100
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
@@ -335,9 +335,18 @@ def main():
         plt.imshow(np.rot90(np.rot90(world_map)), interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
 
-        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [side_length, curr_position.x])
-        print(search)
-        print(path)
+        new_maze = np.full(np.shape(world_map), -1)
+
+        end =  Point(50, side_length)
+        came_from, cost_so_far = AStar.search(world_map, curr_position, end)
+        for point, cost in cost_so_far.items():
+            new_maze[point.y][point.x] = cost
+        print(new_maze)
+        last_elm = end
+        print(last_elm)
+        while last_elm is not None:
+            last_elm = came_from[last_elm]
+            print(last_elm)
         # Save image
         # plt.show()
 

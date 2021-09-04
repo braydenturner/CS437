@@ -1,199 +1,86 @@
+import heapq
+from typing import *
+from point import Point
 import numpy as np
 
-class Point:
-    """
-    Used to denote x, y coordinated
-    """
-    col: int
-    row: int
+T = TypeVar('T')
 
-    def __init__(self, col: float, row: float):
-        self.col = int(col)
-        self.row = int(row)
+class PriorityQueue:
+    def __init__(self):
+        self.elements: List[Tuple[float, T]] = []
 
-    def __add__(self, other):
-        return Point(self.col + other.col,  self.row + other.row)
+    def empty(self) -> bool:
+        return not self.elements
 
-    def __str__(self):
-        return f"({self.col},{self.row})"
+    def put(self, item: T, priority: float):
+        heapq.heappush(self.elements, (priority, item))
+
+    def get(self) -> T:
+        return heapq.heappop(self.elements)[1]
 
 
-class AStarSearch:
-    class Node:
-        """
-            A node class for A* Pathfinding
-            parent is parent of the current Node
-            position is current position of the Node in the maze
-            g is cost from start to current Node
-            h is heuristic based estimated cost for current Node to end Node
-            f is total cost of present node i.e. :  f = g + h
-        """
-
-        def __init__(self, parent=None, position=None):
-            self.parent = parent
-            self.position = position
-
-            self.g = 0
-            self.h = 0
-            self.f = 0
-        def __eq__(self, other):
-            return self.position == other.position
+class AStar:
 
     @staticmethod
-    #This function return the path of the search
-    def return_path(current_node, maze):
-        path = []
-        # here we create the initialized result maze with -1 in every position
-        result = np.full(np.shape(maze), -1)
-        current = current_node
-        while current is not None:
-            path.append(current.position)
-            current = current.parent
-        # Return reversed path as we need to show from start to end path
-        path = path[::-1]
-        start_value = 0
-        # we update the path of start to end found by A-star serch with every step incremented by 1
-        for i in range(len(path)):
-            result[path[i][0]][path[i][1]] = start_value
-            start_value += 1
-        return result, path
+    def heuristic(a: Point, b: Point) -> float:
+        return abs(a.x - b.x) + abs(a.y - b.y)
 
     @staticmethod
-    def search(maze, cost, start, end):
-        """
-            Returns a list of tuples as a path from the given start to the given end in the given maze
-            :param maze:
-            :param cost
-            :param start:
-            :param end:
-            :return:
-        """
+    def neighbors(map, current: Point) -> [Point]:
+        directions = [Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)]
+        neighbors_of_current = [current + direction for direction in directions]
+        rows, columns = np.shape(map)
+        filtered = filter(lambda neighbor: 0 <= neighbor.x < columns and 0 <= neighbor.y < rows and \
+                   map[neighbor.y][neighbor.x] == 0, neighbors_of_current)
+        return filtered
 
-        # Create start and end node with initized values for g, h and f
-        start_node = AStarSearch.Node(None, tuple(start))
-        start_node.g = start_node.h = start_node.f = 0
-        end_node = AStarSearch.Node(None, tuple(end))
-        end_node.g = end_node.h = end_node.f = 0
+    @staticmethod
+    def search(map, start: Point, goal: Point):
+        frontier = PriorityQueue()
+        frontier.put(start, 0)
+        came_from: Dict[Point, Optional[Point]] = {}
+        cost_so_far: Dict[Point, float] = {}
+        came_from[start] = None
+        cost_so_far[start] = 0
 
-        # Initialize both yet_to_visit and visited list
-        # in this list we will put all node that are yet_to_visit for exploration.
-        # From here we will find the lowest cost node to expand next
-        yet_to_visit_list = []
-        # in this list we will put all node those already explored so that we don't explore it again
-        visited_list = []
+        while not frontier.empty():
+            current: Point = frontier.get()
 
-        # Add the start node
-        yet_to_visit_list.append(start_node)
+            if current == goal:
+                break
 
-        # Adding a stop condition. This is to avoid any infinite loop and stop
-        # execution after some reasonable number of steps
-        outer_iterations = 0
-        max_iterations = (len(maze) // 2) ** 10
-        print(f"Iterations {max_iterations}")
+            for next_neighbor in AStar.neighbors(map, current):
+                new_cost = cost_so_far[current] + 1
+                if next_neighbor not in cost_so_far or new_cost < cost_so_far[next_neighbor]:
+                    cost_so_far[next_neighbor] = new_cost
+                    priority = new_cost + AStar.heuristic(next_neighbor, goal)
+                    frontier.put(next_neighbor, priority)
+                    came_from[next_neighbor] = current
 
-        # what squares do we search . serarch movement is left-right-top-bottom
-        #(4 movements) from every positon
-
-        move  =  [[-1, 0 ], # go up
-                  [ 0, -1], # go left
-                  [ 1, 0 ], # go down
-                  [ 0, 1 ]] # go right
+        return came_from, cost_so_far
 
 
-        """
-            1) We first get the current node by comparing all f cost and selecting the lowest cost node for further expansion
-            2) Check max iteration reached or not . Set a message and stop execution
-            3) Remove the selected node from yet_to_visit list and add this node to visited list
-            4) Perofmr Goal test and return the path else perform below steps
-            5) For selected node find out all children (use move to find children)
-                a) get the current postion for the selected node (this becomes parent node for the children)
-                b) check if a valid position exist (boundary will make few nodes invalid)
-                c) if any node is a wall then ignore that
-                d) add to valid children node list for the selected parent
-                
-                For all the children node
-                    a) if child in visited list then ignore it and try next node
-                    b) calculate child node g, h and f values
-                    c) if child in yet_to_visit list then ignore it
-                    d) else move the child to yet_to_visit list
-        """
-        #find maze has got how many rows and columns
-        no_rows, no_columns = np.shape(maze)
+if __name__ == '__main__':
 
-        # Loop until you find the end
+    maze = np.array([[0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0],
+            [0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1, 0]])
 
-        while len(yet_to_visit_list) > 0:
+    new_maze = np.full(np.shape(maze), -1)
 
-            # Every time any node is referred from yet_to_visit list, counter of limit operation incremented
-            outer_iterations += 1
-            if outer_iterations % 1000000 == 0:
-                print(outer_iterations)
+    start = Point(0, 0) # starting position
+    end = Point(5, 4) # ending position
+    cost = 1 # cost per movement
 
-            # Get the current node
-            current_node = yet_to_visit_list[0]
-            current_index = 0
-            for index, item in enumerate(yet_to_visit_list):
-                if item.f < current_node.f:
-                    current_node = item
-                    current_index = index
+    came_from, cost_so_far = AStar.search(maze, start, end)
+    for point, cost in cost_so_far.items():
+        new_maze[point.y][point.x] = cost
+    print(new_maze)
+    last_elm = end
+    print(last_elm)
+    while last_elm != None:
+        last_elm = came_from[last_elm]
+        print(last_elm)
 
-            # if we hit this point return the path such as it may be no solution or
-            # computation cost is too high
-            if outer_iterations > max_iterations:
-                print ("giving up on pathfinding too many iterations")
-                return AStarSearch.return_path(current_node,maze)
-
-            # Pop current node out off yet_to_visit list, add to visited list
-            yet_to_visit_list.pop(current_index)
-            visited_list.append(current_node)
-
-            # test if goal is reached or not, if yes then return the path
-            if current_node == end_node:
-                return AStarSearch.return_path(current_node,maze)
-
-            # Generate children from all adjacent squares
-            children = []
-
-            for new_position in move:
-
-                # Get node position
-                node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
-
-                # Make sure within range (check if within maze boundary)
-                if (node_position[0] > (no_rows - 1) or
-                        node_position[0] < 0 or
-                        node_position[1] > (no_columns -1) or
-                        node_position[1] < 0):
-                    continue
-
-                # Make sure walkable terrain
-                if maze[node_position[0]][node_position[1]] != 0:
-                    continue
-
-                # Create new node
-                new_node = AStarSearch.Node(current_node, node_position)
-
-                # Append
-                children.append(new_node)
-
-            # Loop through children
-            for child in children:
-
-                # Child is on the visited list (search entire visited list)
-                if len([visited_child for visited_child in visited_list if visited_child == child]) > 0:
-                    continue
-
-                # Create the f, g, and h values
-                child.g = current_node.g + cost
-                ## Heuristic costs calculated here, this is using eucledian distance
-                child.h = (((child.position[0] - end_node.position[0]) ** 2) +
-                           ((child.position[1] - end_node.position[1]) ** 2))
-
-                child.f = child.g + child.h
-
-                # Child is already in the yet_to_visit list and g cost is already lower
-                if len([i for i in yet_to_visit_list if child == i and child.g > i.g]) > 0:
-                    continue
-
-                # Add the child to the yet_to_visit list
-                yet_to_visit_list.append(child)
