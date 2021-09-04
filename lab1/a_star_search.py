@@ -72,7 +72,6 @@ if __name__ == '__main__':
 
     start = Point(0, 0) # starting position
     end = Point(5, 4) # ending position
-    cost = 1 # cost per movement
 
     came_from, cost_so_far = AStar.search(maze, start, end)
     for point, cost in cost_so_far.items():
