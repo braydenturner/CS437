@@ -400,7 +400,7 @@ def main():
 
         # Move in direction until object is hit, measuring distance
         Movement.move_forward()
-        Location.monitor_location(stop_at=Point.y)
+        Location.monitor_location(stop_at=end.y)
 
         # Turn
 
