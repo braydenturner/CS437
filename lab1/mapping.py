@@ -18,6 +18,8 @@ class Orientation(Enum):
     South = 2
     West = 3
 
+    def __
+
 # [y, x]
 side_length = 400
 world_map = np.zeros((side_length, side_length))
@@ -372,9 +374,10 @@ class Location:
         global curr_orientation
 
         if turn_direction == Movement.Direction.Left:
-            curr_orientation = (curr_orientation - 1) % 4
+            value = -1
         else:
-            curr_orientation = (curr_orientation + 1) % 4
+            value = 1
+        curr_orientation = Orientation((curr_orientation.value + value) % 4)
 
     @staticmethod
     def distance_traveled(time_elapsed, speed_intervals) -> int:
