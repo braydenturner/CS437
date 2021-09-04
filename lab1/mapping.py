@@ -273,6 +273,7 @@ class Movement:
     def compute_moves(path: [Point]) -> [Move]:
         global curr_orientation
 
+
         last_point = path.pop()
         distance_forward = 0
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
@@ -442,7 +443,7 @@ def main():
         plt.savefig("/home/pi/Desktop/map_search.png")
 
         # Move
-        moves = Movement.compute_moves(path_forward)
+        moves = Movement.compute_moves(path_forward[1:])
         for move in moves:
             if move.type == Movement.Move.Type.Forward:
                 Movement.move_forward()
