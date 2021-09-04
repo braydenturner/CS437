@@ -369,8 +369,8 @@ def main():
             path_forward.append(last_elm)
 
         cmap = plt.cm.gray
-        norm = plt.Normalize(new_maze.min(), new_maze.max())
-        rgba = cmap(norm(new_maze))
+        norm = plt.Normalize(world_map.min(), world_map.max())
+        rgba = cmap(norm(world_map))
 
         path_forward.reverse()
         for point in path_forward:
