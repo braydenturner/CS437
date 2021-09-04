@@ -200,8 +200,8 @@ class Ultrasonic:
         global world_map
         padded_map = np.copy(world_map)
         for x in range(6):
-            temp_map = np.copy(world_map)
-            for row_i, row in enumerate(world_map):
+            temp_map = np.copy(padded_map)
+            for row_i, row in enumerate(padded_map):
                 for col_i, col in enumerate(row):
                     if col == 1:
                         neighbors = AStar.neighbors(temp_map, Point(col_i, row_i))
