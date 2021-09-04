@@ -19,7 +19,7 @@ class Orientation(Enum):
 
 
 # [y, x]
-side_length = 100
+side_length = 50
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
