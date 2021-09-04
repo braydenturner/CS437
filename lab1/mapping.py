@@ -272,8 +272,7 @@ class Movement:
         last_point = None
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
         moves = []
-        for point in path:
-            next_point = path.pop()
+        for next_point in path:
             if last_point is None:
                 last_point = next_point
                 continue
@@ -319,8 +318,8 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
-            # print(f"Distance {distance}cm")
-            if abs(distance - stop_at) < 2:
+
+            if abs(distance - stop_at) < .5:
                 break
         fc.stop()
         fc.left_rear_speed.deinit()
@@ -407,7 +406,7 @@ def main():
         new_maze = np.full(np.shape(world_map), -1)
 
         # start = Point(200, 0)
-        end = Point(200, 100)
+        end = Point(200, 120)
 
         print("Searching for best possible path")
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
