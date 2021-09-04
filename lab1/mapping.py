@@ -362,8 +362,6 @@ def main():
         for point, cost in cost_so_far.items():
             new_maze[point.y][point.x] = cost
 
-        plt.imshow(new_maze, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end
         path_forward = [last_elm]
         while last_elm is not None:
@@ -373,6 +371,10 @@ def main():
         path_forward.reverse()
 
         print(path_forward)
+        for point in path_forward:
+            new_maze[point.y][point.x] = 500
+        plt.imshow(new_maze, interpolation='nearest')
+        plt.savefig("/home/pi/Desktop/map_search.png")
         # Save image
         # plt.show()
 

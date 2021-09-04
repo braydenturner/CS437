@@ -57,8 +57,6 @@ class AStar:
                     priority = new_cost + AStar.heuristic(next_neighbor, goal)
                     frontier.put(next_neighbor, priority)
                     came_from[next_neighbor] = current
-                    if next_neighbor == goal:
-                        print("Adding goal")
 
         return came_from, cost_so_far
 
