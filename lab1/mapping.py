@@ -331,7 +331,7 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
-        print(world_map)
+        np.rot90(np.rot90(world_map))
         plt.imshow(world_map, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
 
