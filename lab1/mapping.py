@@ -290,7 +290,7 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
-            if abs(distance - stop_at) < 2:
+            if abs(distance - stop_at) < 1:
                 break
         fc.stop()
         fc.left_rear_speed.deinit()
@@ -363,7 +363,8 @@ class Location:
 
 def main():
     # Process(target=WepPage.run).start()
-    # while True:
+    x = 0
+    while x < 4:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
         plt.imshow(world_map, interpolation='nearest')
@@ -401,6 +402,9 @@ def main():
         # Move in direction until object is hit, measuring distance
         Movement.move_forward()
         Location.monitor_location(stop_at=end.y)
+        Movement.turn_right()
+
+        x+=1
 
         # Turn
 
