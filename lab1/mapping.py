@@ -195,6 +195,22 @@ class Ultrasonic:
         distance = fc.us.get_distance()
         return distance
 
+    @staticmethod
+    def pad_world_map():
+        '''
+        Adds extra passing to obstacle found to help with car clearance
+        :return:
+        '''
+        global world_map
+        for x in range(5):
+            temp_map = np.copy(world_map)
+            for row_i, row in enumerate(world_map):
+                for col_i, col in enumerate(row):
+                    if col == 1:
+                        neighbors = AStar.neighbors(temp_map, Point(col_i, row_i))
+                        for neighbor in neighbors:
+                            temp_map[neighbor.y][neighbor.x] = 1
+            world_map = temp_map
 
 class Movement:
     """
@@ -331,9 +347,12 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
-        print(world_map)
         plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map.png")
+        plt.savefig("/home/pi/Desktop/map_no_padding.png")
+
+        Ultrasonic.pad_world_map()
+        plt.imshow(world_map, interpolation='nearest')
+        plt.savefig("/home/pi/Desktop/map_padding.png")
 
         new_maze = np.full(np.shape(world_map), -1)
 
@@ -342,7 +361,8 @@ def main():
 
         for point, cost in cost_so_far.items():
             new_maze[point.y][point.x] = cost
-        print(new_maze)
+
+        new_maze *= 5
         plt.imshow(new_maze, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end

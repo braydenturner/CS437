@@ -5,6 +5,7 @@ import numpy as np
 
 T = TypeVar('T')
 
+
 class PriorityQueue:
     def __init__(self):
         self.elements: List[Tuple[float, T]] = []
@@ -31,7 +32,7 @@ class AStar:
         neighbors_of_current = [current + direction for direction in directions]
         rows, columns = np.shape(map)
         filtered = filter(lambda neighbor: 0 <= neighbor.x < columns and 0 <= neighbor.y < rows and \
-                   map[neighbor.y][neighbor.x] == 0, neighbors_of_current)
+                                           map[neighbor.y][neighbor.x] == 0, neighbors_of_current)
         return filtered
 
     @staticmethod
@@ -64,15 +65,15 @@ class AStar:
 if __name__ == '__main__':
 
     maze = np.array([[0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 1, 0, 0],
-            [0, 1, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0]])
+                     [0, 0, 0, 0, 0, 0],
+                     [0, 1, 0, 1, 0, 0],
+                     [0, 1, 0, 0, 1, 0],
+                     [0, 0, 0, 0, 1, 0]])
 
     new_maze = np.full(np.shape(maze), -1)
 
-    start = Point(0, 0) # starting position
-    end = Point(5, 4) # ending position
+    start = Point(0, 0)  # starting position
+    end = Point(5, 4)  # ending position
 
     came_from, cost_so_far = AStar.search(maze, start, end)
     for point, cost in cost_so_far.items():
@@ -80,7 +81,6 @@ if __name__ == '__main__':
     print(new_maze)
     last_elm = end
     print(last_elm)
-    while last_elm != None:
+    while last_elm is not None:
         last_elm = came_from[last_elm]
         print(last_elm)
-
