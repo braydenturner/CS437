@@ -333,11 +333,12 @@ def main():
         Ultrasonic.find_objects()
         search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [side_length, curr_position.x])
 
+        plt.imshow(np.rot90(np.rot90(world_map)), interpolation='nearest')
+        plt.savefig("/home/pi/Desktop/map.png")
+
         print(search)
         print(path)
         # Save image
-        plt.imshow(world_map, interpolation='nearest')
-        plt.savefig("/home/pi/Desktop/map.png")
         # plt.show()
 
 
