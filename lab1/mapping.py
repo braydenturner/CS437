@@ -146,7 +146,6 @@ class Ultrasonic:
         :return: distance in cm
         """
         distance: int = fc.us.get_distance()  # cm
-        print(f"Distance: {distance}cm")
 
         return distance
 
@@ -388,7 +387,7 @@ class Location:
             return 0
         mean_speed = np.mean(speed_intervals)
         distance =  mean_speed * time_elapsed
-        print(f"Distance traveled {distance}cm")
+        # print(f"Distance traveled {distance}cm")
 
         return distance
 
@@ -398,7 +397,7 @@ class Location:
         :return: speed in cm/s
         """
         speed_reading = fc.speed_val()
-        print(f"Current speed: {speed_reading} cm/s")
+        # print(f"Current speed: {speed_reading} cm/s")
         return speed_reading
 
 
