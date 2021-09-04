@@ -331,14 +331,14 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
-        np.rot90(np.rot90(world_map))
-        plt.imshow(world_map, interpolation='nearest')
+        rotated = np.rot90(np.rot90(world_map))
+        plt.imshow(rotated, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map.png")
 
-        new_maze = np.full(np.shape(world_map), -1)
+        new_maze = np.full(np.shape(rotated), -1)
 
         end =  Point(50, side_length)
-        came_from, cost_so_far = AStar.search(world_map, curr_position, end)
+        came_from, cost_so_far = AStar.search(rotated, curr_position, end)
 
         for point, cost in cost_so_far.items():
             new_maze[point.y][point.x] = cost
