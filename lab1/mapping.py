@@ -368,10 +368,14 @@ def main():
             last_elm = came_from[last_elm]
             path_forward.append(last_elm)
 
+        cmap = plt.cm.gray
+        norm = plt.Normalize(new_maze.min(), new_maze.max())
+        rgba = cmap(norm(world_map))
+
         path_forward.reverse()
         for point in path_forward:
             if point is not None:
-                new_maze[point.y][point.x] = 500
+                rgba[point.y][point.x] = 1, 0, 0
         plt.imshow(new_maze, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         # Save image
