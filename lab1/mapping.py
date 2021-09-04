@@ -356,7 +356,7 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        end = Point(30, side_length)
+        end = Point(30, side_length - 1)
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
 
         for point, cost in cost_so_far.items():
@@ -366,8 +366,9 @@ def main():
         plt.savefig("/home/pi/Desktop/map_search.png")
         last_elm = end
         print(last_elm)
-        for x, y in came_from.items():
-            print(f"{y}->{x}")
+        while last_elm is not None:
+            last_elm = came_from[last_elm]
+            print(last_elm)
         # Save image
         # plt.show()
 
