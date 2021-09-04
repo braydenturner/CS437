@@ -267,43 +267,29 @@ class Movement:
     def compute_moves(path: [Point]) -> [Move]:
         global curr_orientation
 
-
         last_point = path.pop()
         distance_forward = 0
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
         moves = []
         while len(path) > 0:
             next_point = path.pop()
-            if curr_orientation == Orientation.North or curr_orientation == Orientation.South:
-                # Still forward
-                if last_point.x == next_point.x:
-                    forward.amount+= 1
-                elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
-                        next_point.x > last_point.x and curr_orientation == Orientation.South:
-                    moves.append(forward)
-                    moves.append(Movement.Move(Movement.Move.Type.Left))
-                    Location.update_orientation(Movement.Direction.Left)
-                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
-                else:
-                    moves.append(forward)
-                    moves.append(Movement.Move(Movement.Move.Type.Right))
-                    Location.update_orientation(Movement.Direction.Right)
-                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+            print(f"Next point {next_point}")
+            # Still forward
+            if last_point.x == next_point.x:
+                forward.amount += 1
+            elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
+                    next_point.x > last_point.x and curr_orientation == Orientation.South or \
+                    next_point.y < last_point.y and curr_orientation == Orientation.West or \
+                    next_point.y > last_point.y and curr_orientation == Orientation.East:
+                moves.append(forward)
+                moves.append(Movement.Move(Movement.Move.Type.Left))
+                Location.update_orientation(Movement.Direction.Left)
+                forward = Movement.Move(Movement.Move.Type.Forward, 0)
             else:
-                # Still forward
-                if last_point.y == next_point.y:
-                    forward.amount += 1
-                elif next_point.y < last_point.y and curr_orientation == Orientation.West or \
-                        next_point.y > last_point.y and curr_orientation == Orientation.East:
-                    moves.append(forward)
-                    moves.append(Movement.Move(Movement.Move.Type.Left))
-                    Location.update_orientation(Movement.Direction.Left)
-                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
-                else:
-                    moves.append(forward)
-                    moves.append(Movement.Move(Movement.Move.Type.Right))
-                    Location.update_orientation(Movement.Direction.Right)
-                    forward = Movement.Move(Movement.Move.Type.Forward, 0)
+                moves.append(forward)
+                moves.append(Movement.Move(Movement.Move.Type.Right))
+                Location.update_orientation(Movement.Direction.Right)
+                forward = Movement.Move(Movement.Move.Type.Forward, 0)
 
             last_point = next_point
 
