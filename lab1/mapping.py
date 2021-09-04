@@ -249,11 +249,13 @@ class Movement:
     @staticmethod
     def turn_left(power: int = 50):
         fc.turn_left(power)
+        fc.stop()
 
     @staticmethod
     def turn_right(power: int = 50):
         fc.turn_right(power)
         time.sleep(.55)
+        fc.stop()
 
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
