@@ -23,7 +23,7 @@ side_length = 400
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
-curr_position = Point(50, 0)
+curr_position = Point(200, 0)
 curr_orientation = Orientation.North
 
 
@@ -317,6 +317,7 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
+            print(f"Distance {distance}cm")
             if abs(distance - stop_at) < 2:
                 break
         fc.stop()
