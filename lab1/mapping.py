@@ -86,8 +86,6 @@ class Ultrasonic:
         if point.x < side_length and point.y < side_length:
             # Swapped in matrix
             world_map[point.y][point.x] = 1
-        else:
-            # print(f"Point({point}) out of bounds")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
