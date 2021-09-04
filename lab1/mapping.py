@@ -246,15 +246,18 @@ class Movement:
             self.type = type_of_move
             self.amount = amount
 
+    turn_time = .60
+
     @staticmethod
     def turn_left(power: int = 50):
         fc.turn_left(power)
+        time.sleep(Movement.turn_time)
         fc.stop()
 
     @staticmethod
     def turn_right(power: int = 50):
         fc.turn_right(power)
-        time.sleep(.55)
+        time.sleep(Movement.turn_time)
         fc.stop()
 
     # 100 power over 1s is 1cm
