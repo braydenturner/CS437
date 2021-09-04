@@ -19,7 +19,7 @@ class Orientation(Enum):
 
 
 # [y, x]
-side_length = 200
+side_length = 50
 world_map = np.zeros((side_length, side_length))
 step = 10
 current_servo_angle = 0
@@ -331,7 +331,7 @@ def main():
     while True:
         # Scan 180 FOV, Update map, interpolate points in between
         Ultrasonic.find_objects()
-        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [200, curr_position.x])
+        search, path = AStarSearch.search(world_map, 1, [curr_position.y, curr_position.x], [side_length, curr_position.x])
 
         print(search)
         print(path)
