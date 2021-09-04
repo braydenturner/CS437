@@ -269,11 +269,10 @@ class Movement:
     def compute_moves(path: [Point]) -> [Move]:
         global curr_orientation
 
-        last_point = path.pop()
-        distance_forward = 0
+        last_point = None
         forward = Movement.Move(Movement.Move.Type.Forward, 0)
         moves = []
-        while len(path) > 0:
+        for point in path:
             next_point = path.pop()
             if last_point is None:
                 last_point = next_point
@@ -299,6 +298,8 @@ class Movement:
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
 
             last_point = next_point
+
+        moves.append(forward)
 
         return moves
 
