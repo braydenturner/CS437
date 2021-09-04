@@ -405,8 +405,8 @@ def main():
 
         new_maze = np.full(np.shape(world_map), -1)
 
-        # start = Point(50, 0)
-        end = Point(200, 200)
+        # start = Point(200, 0)
+        end = Point(200, 100)
 
         print("Searching for best possible path")
         came_from, cost_so_far = AStar.search(world_map, curr_position, end)
