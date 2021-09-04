@@ -86,6 +86,7 @@ class Ultrasonic:
         if point.x < side_length and point.y < side_length:
             # Swapped in matrix
             world_map[point.y][point.x] = 1
+            print(f"Marking point {point}")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -274,6 +275,9 @@ class Movement:
         while len(path) > 0:
             next_point = path.pop()
             print(f"Next point {next_point}")
+            if last_point is None:
+                last_point = next_point
+                continue
             # Still forward
             if last_point.x == next_point.x:
                 forward.amount += 1
@@ -426,7 +430,7 @@ def main():
 
         # Move
         print("Computing moves to make")
-        moves = Movement.compute_moves(path_forward[1:])
+        moves = Movement.compute_moves(path_forward)
         for move in moves:
             print(f"Make move {move.type} for {move.amount}")
             if move.type == Movement.Move.Type.Forward:
