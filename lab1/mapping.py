@@ -264,8 +264,6 @@ class Movement:
     @staticmethod
     def move_forward(power: int = 10):
         fc.forward(power)
-        time.sleep(.55)
-        Location.monitor_location()
 
     @staticmethod
     def compute_moves(path: [Point]) -> [Move]:
