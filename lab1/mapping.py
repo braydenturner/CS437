@@ -369,10 +369,9 @@ def main():
             path_forward.append(last_elm)
 
         path_forward.reverse()
-
-        print(path_forward)
         for point in path_forward:
-            new_maze[point.y][point.x] = 500
+            if point is not None:
+                new_maze[point.y][point.x] = 500
         plt.imshow(new_maze, interpolation='nearest')
         plt.savefig("/home/pi/Desktop/map_search.png")
         # Save image
