@@ -279,19 +279,20 @@ class Movement:
                 last_point = next_point
                 continue
             # Still forward
-            if last_point.x == next_point.x:
+            if curr_orientation in [Orientation.North, Orientation.South] and last_point.x == next_point.x \
+                    or curr_orientation in [Orientation.East, Orientation.West] and last_point.y == next_point.y:
                 forward.amount += 1
             elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
                     next_point.x > last_point.x and curr_orientation == Orientation.South or \
                     next_point.y < last_point.y and curr_orientation == Orientation.West or \
                     next_point.y > last_point.y and curr_orientation == Orientation.East:
-                print(f"Move forward for point {forward.amount}, then turn left")
+                print(f"Move forward for {forward.amount}, then turn left")
                 moves.append(forward)
                 moves.append(Movement.Move(Movement.Move.Type.Left))
                 Location.update_orientation(Movement.Direction.Left)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
             else:
-                print(f"Move forward for point {forward.amount}, then turn right")
+                print(f"Move forward for {forward.amount}, then turn right")
                 moves.append(forward)
                 moves.append(Movement.Move(Movement.Move.Type.Right))
                 Location.update_orientation(Movement.Direction.Right)
