@@ -109,6 +109,6 @@ if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
     try:
         while True:
-            obj_recognition.detect_continuous
+            obj_recognition.detect_continuous()
     finally:
         del obj_recognition
