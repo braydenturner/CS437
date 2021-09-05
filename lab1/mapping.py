@@ -327,30 +327,6 @@ class Movement:
 
 found_stop_sign = False
 
-def recognize_objects():
-    with ObjectRecognition() as recognizer:
-        for frame in recognizer.camera.capture_continuous(recognizer.rawCapture, format="bgr", use_video_port=True):
-
-            global stopped_moving
-            if stopped_moving:
-                stopped_moving = False
-                return
-
-            image = frame.array
-            # Resize
-            rgb = recognizer.process_images(image)
-            results = recognizer.detect_objects(rgb, 0.4)
-            objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
-            print(objects)
-            recognizer.rawCapture.truncate(0)
-            if "stop sign" in objects:
-                global found_stop_sign
-                found_stop_sign = True
-                print("Stop sign")
-            else:
-                found_stop_sign = False
-
-
 class Location:
     """
     Maintains location of car in space
@@ -449,6 +425,29 @@ class Location:
         # print(f"Current speed: {speed_reading} cm/s")
         return speed_reading
 
+global finished
+
+def recognize_objects():
+    with ObjectRecognition() as recognizer:
+        for frame in recognizer.camera.capture_continuous(recognizer.rawCapture, format="bgr", use_video_port=True):
+
+            global finished
+            if finished:
+                return
+
+            image = frame.array
+            # Resize
+            rgb = recognizer.process_images(image)
+            results = recognizer.detect_objects(rgb, 0.4)
+            objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
+            print(objects)
+            recognizer.rawCapture.truncate(0)
+            if "stop sign" in objects:
+                global found_stop_sign
+                found_stop_sign = True
+                print("Stop sign")
+            else:
+                found_stop_sign = False
 
 def main():
     # Process(target=WepPage.run).start()
@@ -534,10 +533,13 @@ def main():
 
         i += 1
         print(f"Ended at {curr_position}")
+
+    finished = True
     thread.join()
 
 if __name__ == "__main__":
     try:
         main()
     finally:
+        finished = True
         fc.stop()
