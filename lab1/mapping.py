@@ -344,7 +344,7 @@ def recognize_objects():
 
             results = recognizer.detect_objects(rgb, 0.8)
             objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
-
+            print(objects)
             recognizer.rawCapture.truncate(0)
             if "stop sign" in objects:
                 global found_stop_sign
