@@ -77,18 +77,19 @@ class ObjectRecognition:
         return self.labels[classId]
 
     def detect(self):
-        frame = self.camera.capture(self.rawCapture, format="bgr", use_video_port=True)
-        image = frame.array
+          for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
+               image = frame.array
 
-        # Resize
-        inp = cv2.resize(image, (self.input_width, self.input_height))
+               # Resize
+               inp = cv2.resize(image, (self.input_width, self.input_height))
 
-        #Convert img to RGB
-        rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+               #Convert img to RGB
+               rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 
-        results = self.detect_objects(rgb, 0.8)
-        self.rawCapture.truncate(0)
-        return results
+               results = self.detect_objects(rgb, 0.8)
+               self.rawCapture.truncate(0)
+
+               return results
 
     def detect_continuous(self):
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
