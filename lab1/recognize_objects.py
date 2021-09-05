@@ -108,7 +108,7 @@ class ObjectRecognition:
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
     try:
-        while true:
+        while True:
             results = self.detect()
             objects = [(self.labels[result['class_id']], result['score']) for result in results]
             print(objects)
