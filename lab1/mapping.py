@@ -84,10 +84,10 @@ class Ultrasonic:
     def mark_point(point: Point):
         global side_length
 
-        if point.x < side_length and point.y < side_length:
+        if 0 <= point.x < side_length and 0 <= point.y < side_length:
             # Swapped in matrix
             world_map[point.y][point.x] = 1
-            print(f"Marking point {point}")
+#             print(f"Marking point {point}")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -378,6 +378,7 @@ class Location:
 
         :return:
         """
+
         if orientation == None:
             global curr_orientation
             updated = curr_orientation
@@ -420,7 +421,7 @@ def main():
     global curr_position
     # Starting point
     curr_position = Point(200, 0)
-    end = Point(200, 250)
+    end = Point(200, 300)
 
     done = False
     fc.start_speed_thread()
