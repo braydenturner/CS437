@@ -206,7 +206,8 @@ class Ultrasonic:
                     if col == 1:
                         neighbors = AStar.neighbors(temp_map, Point(col_i, row_i))
                         for neighbor in neighbors:
-                            temp_map[neighbor.y][neighbor.x] = 1
+                            if neighbor !- curr_position:
+                                temp_map[neighbor.y][neighbor.x] = 1
             padded_map = temp_map
 
         return padded_map
