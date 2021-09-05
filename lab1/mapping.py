@@ -358,7 +358,7 @@ class Location:
             relative_point = Point(0, new_location)
         elif curr_orientation == Orientation.East:
             # (y, -x)
-            relative_point = Point(new_location, 0)
+            relative_point = Point(-1 * new_location, 0)
         elif curr_orientation == Orientation.South:
             # (-x, -y)
             relative_point = Point(0, -1 * new_location)
