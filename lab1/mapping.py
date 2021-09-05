@@ -63,7 +63,7 @@ class Ultrasonic:
         :return: list of distance and angles (cm, degrees)
         """
         global step
-        angle_range = 180
+        angle_range = 170
         max_angle: int = int(angle_range / 2)
         min_angle = max_angle * -1
 
@@ -245,7 +245,7 @@ class Movement:
             self.type = type_of_move
             self.amount = amount
 
-    turn_time = .57
+    turn_time = .55
 
     @staticmethod
     def turn_left(power: int = 50):
