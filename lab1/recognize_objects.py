@@ -76,7 +76,7 @@ class ObjectRecognition:
     def label_from_class_id(self, classId):
         return self.labels[classId]
 
-    def process_images(image):
+    def process_images(self, image):
         inp = cv2.resize(image, (self.input_width, self.input_height))
 
         #Convert img to RGB
