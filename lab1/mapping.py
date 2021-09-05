@@ -374,7 +374,7 @@ class Location:
             speeds.append(Location.speed())
             elapsed_time = time.perf_counter() - start_time
             distance = Location.distance_traveled(elapsed_time, speeds)
-            print(f"{distance}")
+            # print(f"{distance}")
 
             if abs(distance - stop_at) < .5:
                 global stopped_moving
