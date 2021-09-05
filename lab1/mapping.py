@@ -425,7 +425,7 @@ class Location:
         # print(f"Current speed: {speed_reading} cm/s")
         return speed_reading
 
-global finished
+finished = False
 
 def recognize_objects():
     with ObjectRecognition() as recognizer:
