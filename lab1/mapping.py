@@ -412,7 +412,7 @@ def main():
     fc.start_speed_thread()
     i = 0
     while not done:
-        end = Point(200, 200)
+        end = Point(200, 250)
 
         # ================================
         # Scan 180 FOV, Update map, pad the objects
@@ -441,7 +441,7 @@ def main():
         path_forward.reverse()
 
         #cutoff part of path to rescan
-        cutoff = 150
+        cutoff = 70
         if len(path_forward) > cutoff:
             path_forward = path_forward[0:cutoff]
         else:
