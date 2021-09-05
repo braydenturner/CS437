@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from webpage import WepPage
 from typing import *
 from a_star_search import AStar
+from recognize_objects import ObjectRecognition
 import picar_4wd as fc
 import numpy as np
 import time
@@ -333,17 +334,24 @@ class Location:
     def monitor_location(stop_at: int):
         speeds = []
         start_time = time.perf_counter()
-        while True:
-            Movement.move_forward()
-            speeds.append(Location.speed())
-            elapsed_time = time.perf_counter() - start_time
-            distance = Location.distance_traveled(elapsed_time, speeds)
+        with ObjectRecognition() as recognizer:
+            while True:
+                recognized_objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in recognizer.detect()]
+                if "stop sign" in recognized_objects:
+                   fc.stop()
+                   print("Stop sign")
+                   continue
+                else:
+                    Movement.move_forward()
+                    speeds.append(Location.speed())
+                    elapsed_time = time.perf_counter() - start_time
+                    distance = Location.distance_traveled(elapsed_time, speeds)
 
-            if abs(distance - stop_at) < .5:
-                break
-        fc.stop()
-        fc.left_rear_speed.deinit()
-        fc.right_rear_speed.deinit()
+                if abs(distance - stop_at) < .5:
+                    break
+            fc.stop()
+            fc.left_rear_speed.deinit()
+            fc.right_rear_speed.deinit()
 
         Location.update_location(distance)
 
