@@ -338,11 +338,9 @@ def recognize_objects():
                 return
 
             image = frame.array
-
             # Resize
             rgb = recognizer.process_images(image)
-
-            results = recognizer.detect_objects(rgb, 0.8)
+            results = recognizer.detect_objects(rgb, 0.4)
             objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
             print(objects)
             recognizer.rawCapture.truncate(0)

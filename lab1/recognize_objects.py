@@ -109,7 +109,7 @@ class ObjectRecognition:
             #Convert img to RGB
             rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 
-            results = self.detect_objects(rgb, 0.8)
+            results = self.detect_objects(rgb, 0.4)
             objects = [(self.labels[result['class_id']], result['score']) for result in results]
             print(objects)
             self.rawCapture.truncate(0)
