@@ -421,7 +421,7 @@ def main():
     global curr_position
     # Starting point
     curr_position = Point(200, 0)
-    end = Point(200, 300)
+    end = Point(200, 250)
 
     done = False
     fc.start_speed_thread()
