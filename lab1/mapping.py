@@ -326,7 +326,6 @@ class Movement:
 
 
 found_stop_sign = False
-stopped_moving = False
 
 def recognize_objects():
     with ObjectRecognition() as recognizer:
@@ -361,8 +360,6 @@ class Location:
     def monitor_location(stop_at: int):
         speeds = []
         start_time = time.perf_counter()
-        thread = threading.Thread(target=recognize_objects)
-        thread.start()
         while True:
             global found_stop_sign
             if found_stop_sign:
@@ -376,8 +373,6 @@ class Location:
 
             if abs(distance - stop_at) < .5:
                 global stopped_moving
-                stopped_moving = True
-                thread.join(1)
                 break
 
         fc.stop()
@@ -465,6 +460,8 @@ def main():
     done = False
     fc.start_speed_thread()
     i = 0
+    thread = threading.Thread(target=recognize_objects)
+    thread.start()
     while not done:
         # ================================
         # Scan 180 FOV, Update map, pad the objects
@@ -537,6 +534,7 @@ def main():
 
         i += 1
         print(f"Ended at {curr_position}")
+    thread.join()
 
 if __name__ == "__main__":
     try:
