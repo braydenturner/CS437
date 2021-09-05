@@ -292,8 +292,8 @@ class Movement:
                 if forward is None:
                     forward = Movement.Move(Movement.Move.Type.Forward, 0)
                 forward.amount += 1
-            elif next_point.x < last_point.x and temp_orientation == Orientation.North or \
-                    next_point.x > last_point.x and temp_orientation == Orientation.South or \
+            elif next_point.x > last_point.x and temp_orientation == Orientation.North or \
+                    next_point.x < last_point.x and temp_orientation == Orientation.South or \
                     next_point.y < last_point.y and temp_orientation == Orientation.West or \
                     next_point.y > last_point.y and temp_orientation == Orientation.East:
 
