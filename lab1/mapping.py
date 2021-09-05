@@ -199,7 +199,7 @@ class Ultrasonic:
         '''
         global world_map
         padded_map = np.copy(world_map)
-        for x in range(6):
+        for x in range(10):
             temp_map = np.copy(padded_map)
             for row_i, row in enumerate(padded_map):
                 for col_i, col in enumerate(row):
