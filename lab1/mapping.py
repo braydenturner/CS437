@@ -123,13 +123,13 @@ class Ultrasonic:
             relative_point = Point(x, y)
         elif curr_orientation == Orientation.East:
             # (y, -x)
-            relative_point = Point(y, x * -1)
+            relative_point = Point(-1 * y, x)
         elif curr_orientation == Orientation.South:
             # (-x, -y)
             relative_point = Point(-1 * x, -1 * y)
         elif curr_orientation == Orientation.West:
             # (-y, x)
-            relative_point = Point(-1 * y, x)
+            relative_point = Point(y, -1 * x)
 
         absolute_point = relative_point + curr_position
 
