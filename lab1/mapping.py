@@ -199,7 +199,7 @@ class Ultrasonic:
         '''
         global world_map
         padded_map = np.copy(world_map)
-        for x in range(10):
+        for x in range(8):
             temp_map = np.copy(padded_map)
             for row_i, row in enumerate(padded_map):
                 for col_i, col in enumerate(row):
@@ -252,12 +252,16 @@ class Movement:
         fc.turn_left(power)
         time.sleep(Movement.turn_time)
         fc.stop()
+        global curr_orientation
+        curr_orientation = Location.update_orientation(Movement.Direction.Left)
 
     @staticmethod
     def turn_right(power: int = 50):
         fc.turn_right(power)
         time.sleep(Movement.turn_time)
         fc.stop()
+        global curr_orientation
+        curr_orientation = Location.update_orientation(Movement.Direction.Right)
 
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
@@ -273,6 +277,8 @@ class Movement:
     def compute_moves(path: [Point]) -> [Move]:
         global curr_orientation
 
+        temp_orientation = curr_orientation
+
         last_point = None
         forward = None
         moves = []
@@ -281,22 +287,22 @@ class Movement:
                 last_point = next_point
                 continue
             # Still forward
-            if curr_orientation in [Orientation.North, Orientation.South] and last_point.x == next_point.x \
-                    or curr_orientation in [Orientation.East, Orientation.West] and last_point.y == next_point.y:
+            if temp_orientation in [Orientation.North, Orientation.South] and last_point.x == next_point.x \
+                    or temp_orientation in [Orientation.East, Orientation.West] and last_point.y == next_point.y:
                 if forward is None:
                     forward = Movement.Move(Movement.Move.Type.Forward, 0)
                 forward.amount += 1
-            elif next_point.x < last_point.x and curr_orientation == Orientation.North or \
-                    next_point.x > last_point.x and curr_orientation == Orientation.South or \
-                    next_point.y < last_point.y and curr_orientation == Orientation.West or \
-                    next_point.y > last_point.y and curr_orientation == Orientation.East:
+            elif next_point.x < last_point.x and temp_orientation == Orientation.North or \
+                    next_point.x > last_point.x and temp_orientation == Orientation.South or \
+                    next_point.y < last_point.y and temp_orientation == Orientation.West or \
+                    next_point.y > last_point.y and temp_orientation == Orientation.East:
 
                 if forward is not None:
                     print(f"Move forward for {forward.amount}")
                     moves.append(forward)
                 print("Turn left")
                 moves.append(Movement.Move(Movement.Move.Type.Left))
-                Location.update_orientation(Movement.Direction.Left)
+                temp_orientation = Location.update_orientation(Movement.Direction.Left, orientation=temp_orientation)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
             else:
                 if forward is not None:
@@ -304,7 +310,7 @@ class Movement:
                     moves.append(forward)
                 print("Turn right")
                 moves.append(Movement.Move(Movement.Move.Type.Right))
-                Location.update_orientation(Movement.Direction.Right)
+                temp_orientation = Location.update_orientation(Movement.Direction.Right, orientation=temp_orientation)
                 forward = Movement.Move(Movement.Move.Type.Forward, 0)
 
             last_point = next_point
@@ -365,20 +371,24 @@ class Location:
         print(f"New position {curr_position}")
 
     @staticmethod
-    def update_orientation(turn_direction: Movement.Direction):
+    def update_orientation(turn_direction: Movement.Direction, orientation=None):
         """
 
         :return:
         """
-
-        global curr_orientation
+        if orientation = None:
+            global curr_orientation
+            updated = curr_orientation
+        else:
+            updated = orientation
 
         if turn_direction == Movement.Direction.Left:
             value = -1
         else:
             value = 1
-        curr_orientation = Orientation((curr_orientation.value + value) % 4)
-        print(f"New orientation {curr_orientation}")
+        updated = Orientation((updated.value + value) % 4)
+        print(f"New orientation {updated}")
+        return updated
 
     @staticmethod
     def distance_traveled(time_elapsed, speed_intervals) -> int:
