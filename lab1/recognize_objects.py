@@ -108,6 +108,9 @@ class ObjectRecognition:
 if __name__ == "__main__":
     obj_recognition = ObjectRecognition()
     try:
-        obj_recognition.detect_continuous()
+        while true:
+            results = self.detect()
+            objects = [(self.labels[result['class_id']], result['score']) for result in results]
+            print(objects)
     finally:
         del obj_recognition
