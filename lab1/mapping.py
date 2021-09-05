@@ -377,6 +377,7 @@ class Location:
         else:
             value = 1
         curr_orientation = Orientation((curr_orientation.value + value) % 4)
+        print(f"New orientation {curr_orientation}")
 
     @staticmethod
     def distance_traveled(time_elapsed, speed_intervals) -> int:
@@ -407,13 +408,12 @@ def main():
     global curr_position
     # Starting point
     curr_position = Point(200, 0)
+    end = Point(200, 250)
 
     done = False
     fc.start_speed_thread()
     i = 0
     while not done:
-        end = Point(200, 250)
-
         # ================================
         # Scan 180 FOV, Update map, pad the objects
         print("Finding objects")
@@ -448,6 +448,8 @@ def main():
             # Last leg of the journey
             print("To the finish")
             done = True
+
+
         # ================================
         # Save photo of path
         cmap = plt.cm.gray
@@ -482,6 +484,7 @@ def main():
                 Movement.turn_right()
 
         i += 1
+        print(f"Ended at {curr_position}")
 
 if __name__ == "__main__":
     try:
