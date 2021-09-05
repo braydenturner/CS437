@@ -76,6 +76,14 @@ class ObjectRecognition:
     def label_from_class_id(self, classId):
         return self.labels[classId]
 
+    def process_images(image):
+        inp = cv2.resize(image, (self.input_width, self.input_height))
+
+        #Convert img to RGB
+        rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+        return rgb
+
     def detect(self):
           for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
                image = frame.array

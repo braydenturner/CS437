@@ -336,18 +336,29 @@ class Location:
         start_time = time.perf_counter()
         with ObjectRecognition() as recognizer:
             while True:
-                recognized_objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in recognizer.detect()]
-                if "stop sign" in recognized_objects:
-                   fc.stop()
-                   print("Stop sign")
-                else:
-                    Movement.move_forward()
-                    speeds.append(Location.speed())
-                    elapsed_time = time.perf_counter() - start_time
-                    distance = Location.distance_traveled(elapsed_time, speeds)
+                for frame in recognizer.camera.capture_continuous(recognizer.rawCapture, format="bgr", use_video_port=True):
+                    image = frame.array
 
-                    if abs(distance - stop_at) < .5:
-                        break
+                    # Resize
+                    rgb = recognizer.process_images(image)
+
+                    results = recognizer.detect_objects(rgb, 0.8)
+                    objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
+
+                    recognizer.rawCapture.truncate(0)
+                    if "stop sign" in objects:
+                       fc.stop()
+                       print("Stop sign")
+                    else:
+                        Movement.move_forward()
+                        speeds.append(Location.speed())
+                        elapsed_time = time.perf_counter() - start_time
+                        distance = Location.distance_traveled(elapsed_time, speeds)
+
+                    break
+
+                if abs(distance - stop_at) < .5:
+                    break
             fc.stop()
             fc.left_rear_speed.deinit()
             fc.right_rear_speed.deinit()
