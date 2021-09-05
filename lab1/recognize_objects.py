@@ -106,11 +106,11 @@ class ObjectRecognition:
             self.rawCapture.truncate(0)
 
 if __name__ == "__main__":
-    obj_recognition = ObjectRecognition()
     try:
         while True:
-            results = self.detect()
-            objects = [(self.labels[result['class_id']], result['score']) for result in results]
-            print(objects)
+            with ObjectRecognition() as recognizer:
+                results = recognizer.detect()
+                objects = [(self.labels[result['class_id']], result['score']) for result in results]
+                print(objects)
     finally:
         del obj_recognition
