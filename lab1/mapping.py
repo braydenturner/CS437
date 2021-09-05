@@ -376,7 +376,7 @@ class Location:
 
         :return:
         """
-        if orientation = None:
+        if orientation == None:
             global curr_orientation
             updated = curr_orientation
         else:
