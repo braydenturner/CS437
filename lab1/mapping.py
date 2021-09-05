@@ -9,6 +9,7 @@ import picar_4wd as fc
 import numpy as np
 import time
 import sys
+import threading
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -324,6 +325,34 @@ class Movement:
         return moves
 
 
+found_stop_sign = False
+stopped_moving = False
+
+def recognize_objects():
+    with ObjectRecognition() as recognizer:
+        for frame in recognizer.camera.capture_continuous(recognizer.rawCapture, format="bgr", use_video_port=True):
+
+            global stopped_moving
+            if stopped_moving:
+                stopped_moving = False
+                return
+
+            image = frame.array
+
+            # Resize
+            rgb = recognizer.process_images(image)
+
+            results = recognizer.detect_objects(rgb, 0.8)
+            objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
+
+            recognizer.rawCapture.truncate(0)
+            if "stop sign" in objects:
+                global found_stop_sign
+                found_stop_sign = True
+                print("Stop sign")
+            else:
+                found_stop_sign = False
+
 
 class Location:
     """
@@ -334,35 +363,28 @@ class Location:
     def monitor_location(stop_at: int):
         speeds = []
         start_time = time.perf_counter()
-        with ObjectRecognition() as recognizer:
-            while True:
-                for frame in recognizer.camera.capture_continuous(recognizer.rawCapture, format="bgr", use_video_port=True):
-                    image = frame.array
+        thread = threading.Thread(target=recognize_objects)
+        thread.start()
+        while True:
+            global found_stop_sign
+            if found_stop_sign:
+                fc.stop()
+                continue
+            Movement.move_forward()
+            speeds.append(Location.speed())
+            elapsed_time = time.perf_counter() - start_time
+            distance = Location.distance_traveled(elapsed_time, speeds)
+            print(f"{distance}")
 
-                    # Resize
-                    rgb = recognizer.process_images(image)
+            if abs(distance - stop_at) < .5:
+                global stopped_moving
+                stopped_moving = True
+                thread.join(1)
+                break
 
-                    results = recognizer.detect_objects(rgb, 0.8)
-                    objects = [recognizer.label_from_class_id(recognized_object["class_id"]) for recognized_object in results]
-
-                    recognizer.rawCapture.truncate(0)
-                    if "stop sign" in objects:
-                       fc.stop()
-                       print("Stop sign")
-                    else:
-                        Movement.move_forward()
-                        speeds.append(Location.speed())
-                        elapsed_time = time.perf_counter() - start_time
-                        distance = Location.distance_traveled(elapsed_time, speeds)
-                        print(f"{distance}")
-
-                    break
-
-                if abs(distance - stop_at) < .5:
-                    break
-            fc.stop()
-            fc.left_rear_speed.deinit()
-            fc.right_rear_speed.deinit()
+        fc.stop()
+        fc.left_rear_speed.deinit()
+        fc.right_rear_speed.deinit()
 
         Location.update_location(distance)
 
