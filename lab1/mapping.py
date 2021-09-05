@@ -87,7 +87,7 @@ class Ultrasonic:
         if point.x < side_length and point.y < side_length:
             # Swapped in matrix
             world_map[point.y][point.x] = 1
-            # print(f"Marking point {point}")
+            print(f"Marking point {point}")
 
     @staticmethod
     def compute_point(dist: float, angle: int) -> Point:
@@ -254,6 +254,7 @@ class Movement:
         fc.stop()
         global curr_orientation
         curr_orientation = Location.update_orientation(Movement.Direction.Left)
+        print(f"New orientation {curr_orientation}")
 
     @staticmethod
     def turn_right(power: int = 50):
@@ -262,6 +263,7 @@ class Movement:
         fc.stop()
         global curr_orientation
         curr_orientation = Location.update_orientation(Movement.Direction.Right)
+        print(f"New orientation {curr_orientation}")
 
     # 100 power over 1s is 1cm
     # distance (cm) = time * (power / 100 ) ?
@@ -387,7 +389,6 @@ class Location:
         else:
             value = 1
         updated = Orientation((updated.value + value) % 4)
-        print(f"New orientation {updated}")
         return updated
 
     @staticmethod
