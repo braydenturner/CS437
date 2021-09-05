@@ -340,15 +340,14 @@ class Location:
                 if "stop sign" in recognized_objects:
                    fc.stop()
                    print("Stop sign")
-                   continue
                 else:
                     Movement.move_forward()
                     speeds.append(Location.speed())
                     elapsed_time = time.perf_counter() - start_time
                     distance = Location.distance_traveled(elapsed_time, speeds)
 
-                if abs(distance - stop_at) < .5:
-                    break
+                    if abs(distance - stop_at) < .5:
+                        break
             fc.stop()
             fc.left_rear_speed.deinit()
             fc.right_rear_speed.deinit()
