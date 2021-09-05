@@ -354,6 +354,7 @@ class Location:
                         speeds.append(Location.speed())
                         elapsed_time = time.perf_counter() - start_time
                         distance = Location.distance_traveled(elapsed_time, speeds)
+                        print(f"{distance})
 
                     break
 
